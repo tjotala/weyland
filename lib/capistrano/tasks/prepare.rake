@@ -67,7 +67,7 @@ namespace :deploy do
 	desc "Run server"
 	task :run do
 		on roles(:all) do |host|
-			execute "#{fetch(:deploy_to)}/current/bin/run.sh"
+			execute "bash", "#{fetch(:deploy_to)}/current/bin/run.sh"
 		end
 	end
 
