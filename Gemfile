@@ -5,5 +5,7 @@ gem 'sinatra'
 gem 'sinatra-json'
 
 # deployment tools
-gem 'capistrano'
-gem 'capistrano-bundler'
+group :development, :test do
+	gem 'capistrano'
+	gem 'capistrano-bundler'
+end
