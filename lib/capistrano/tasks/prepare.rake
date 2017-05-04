@@ -24,6 +24,7 @@ namespace :deploy do
 				sudo "apt-get", "-y upgrade"
 				sudo "apt-get", "-y install ntpdate"
 				sudo "ntpdate", "-u pool.ntp.org"
+				sudo "gem", "install bundler --no-document"
 			end
 		end
 

@@ -2,11 +2,9 @@
 lock '3.8.1'
 
 set :user, 'pi'
-#set :use_sudo, true
 
 set :application, 'weyland'
 set :repo_url, 'git@github.com:tjotala/weyland.git'
-#set :ssh_options, { :forward_agent => true }
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -35,5 +33,3 @@ set :deploy_to, '/var/weyland'
 
 # Default value for keep_releases is 5
 set :keep_releases, 3
-
-set :default_stage, 'staging'
