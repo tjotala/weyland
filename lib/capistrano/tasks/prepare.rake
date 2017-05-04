@@ -67,7 +67,7 @@ namespace :deploy do
 	desc "Run server"
 	task :run do
 		on roles(:all) do |host|
-			execute "nohup", "ruby #{fetch(:deploy_to)}/current/app/run.rb > /dev/null 2>&1 &"
+			execute "#{fetch(:deploy_to)}/current/bin/run.sh"
 		end
 	end
 
