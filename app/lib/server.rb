@@ -5,6 +5,7 @@ require 'sinatra/json'
 require 'json'
 
 require 'errors'
+require 'volumes'
 require 'jobs'
 
 class AxiDrawServer < Sinatra::Base
