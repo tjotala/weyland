@@ -30,7 +30,7 @@ namespace :deploy do
 		desc "Create root folders"
 		task :folders do
 			on roles(:all) do |host|
-				sudo "mkdir", "-p /var/weyland"
+				sudo "mkdir", "-p /var/weyland/queue"
 				sudo "chown", "#{fetch(:user)} /var/weyland"
 			end
 		end

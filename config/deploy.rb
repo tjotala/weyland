@@ -28,7 +28,7 @@ set :deploy_to, '/var/weyland'
 # append :linked_files, "config/database.yml", "config/secrets.yml"
 
 # Default value for linked_dirs is []
-append :linked_dirs, '/var/weyland/queue'
+# append :linked_dirs, '/var/weyland/queue'
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
