@@ -27,6 +27,8 @@ class AxiDrawServer < Sinatra::Base
 	end
 
 	configure :development do
+		set :show_exceptions, true
+		set :raise_errors, true
 		set :bind, '0.0.0.0' # allow access from other hosts
 		set :static_cache_control, [ :public, :max_age => 5 ]
 	end
