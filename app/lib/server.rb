@@ -170,7 +170,7 @@ class AxiDrawServer < Sinatra::Base
 	# @return 200 list of print jobs
 	#
 	get '/api/jobs/?' do
-		json jobs.list
+		json settings.jobs.list
 	end
 
 	##
@@ -181,7 +181,7 @@ class AxiDrawServer < Sinatra::Base
 	# @return 200 print job
 	#
 	get '/api/jobs/:id' do
-		json jobs.get_metadata(params[:id])
+		json settings.jobs.get_metadata(params[:id])
 	end
 
 	##
@@ -192,7 +192,7 @@ class AxiDrawServer < Sinatra::Base
 	# @return 200 print job
 	#
 	get '/api/jobs/:id/content' do
-		send_file(jobs.get_content(params[:id]), :type => 'image/svg+xml', :disposition => 'inline')
+		send_file(settings.jobs.get_content(params[:id]), :type => 'image/svg+xml', :disposition => 'inline')
 	end
 
 	##
@@ -204,7 +204,7 @@ class AxiDrawServer < Sinatra::Base
 	# @return 400 bad print job
 	#
 	post '/api/jobs/?' do
-		json jobs.create(@request_json[:svg])
+		json settings.jobs.create(@request_json[:svg])
 	end
 
 	##
@@ -217,7 +217,7 @@ class AxiDrawServer < Sinatra::Base
 	# @return 404 if no such print job
 	#
 	delete '/api/jobs/:id' do
-		jobs.delete(params[:id])
+		settings.jobs.delete(params[:id])
 		status 204
 	end
 
