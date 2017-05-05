@@ -42,6 +42,7 @@ PLATFORMS
 DEPENDENCIES
   capistrano
   capistrano-bundler
+  sinatra
   sinatra-base
   sinatra-json
 
