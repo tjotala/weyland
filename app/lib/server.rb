@@ -7,6 +7,7 @@ require 'json'
 require 'errors'
 require 'volumes'
 require 'jobs'
+require 'plotter'
 
 class AxiDrawServer < Sinatra::Base
 	configure do
@@ -23,6 +24,7 @@ class AxiDrawServer < Sinatra::Base
 		file.sync = true
 		use Rack::CommonLogger, file
 
+		set :plotter, Plotter.new
 		set :jobs, Jobs.new(LocalVolume.new)
 	end
 
@@ -154,6 +156,32 @@ class AxiDrawServer < Sinatra::Base
 			Kernel::sleep(2)
 			Platform::shutdown
 		end
+		status 204
+	end
+
+	#################################################################
+	## Plotter Control
+	#################################################################
+
+	##
+	# Pen Up
+	#
+	# @method POST
+	# @return 204 no content
+	#
+	post '/v1/pen/up/?' do
+		settings.plotter.pen(:up)
+		status 204
+	end
+
+	##
+	# Pen Down
+	#
+	# @method POST
+	# @return 204 no content
+	#
+	post '/v1/pen/down/?' do
+		settings.plotter.pen(:down)
 		status 204
 	end
 

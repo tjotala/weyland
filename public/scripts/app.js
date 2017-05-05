@@ -3,17 +3,16 @@ var jobs = new Vue({
   data: {
     jobs: [ ],
     paused: false,
-    error: [ ],
+    error: false,
   },
 
   methods: {
     refresh: function() {
-      axios.get('/v1/jobs').then(response => {
-          this.$set('jobs', response.data);
-        }).catch(error => {
-          this.$set('error', error);
-        }
-      );
+      axios.get('/v1/jobs').then(r => {
+        this.$set('jobs', r.data);
+      }).catch(e => {
+        this.$set('error', e);
+      });
     },
 
     view: function(job_id) {
@@ -21,57 +20,51 @@ var jobs = new Vue({
     },
 
     delete: function(job_id) {
-      axios.delete('/v1/jobs/' + job_id).then(response => {
-          this.refresh();
-        }).catch(error => {
-          this.$set('error', error);
-        }
-      );
+      axios.delete('/v1/jobs/' + job_id).then(r => {
+        this.refresh();
+      }).catch(e => {
+        this.$set('error', e);
+      });
     },
 
     clear: function() {
-      axios.delete('/v1/jobs').then(response => {
-          this.refresh();
-        }).catch(error => {
-          this.$set('error', error);
-        }
-      );
+      axios.delete('/v1/jobs').then(r => {
+        this.refresh();
+      }).catch(e => {
+        this.$set('error', e);
+      });
     },
 
     pause: function() {
-      axios.post('/v1/pause').then(response => {
-          this.$set('paused', true);
-        }).catch(error => {
-          this.$set('error', error);
-        }
-      );
+      axios.post('/v1/pause').then(r => {
+        this.$set('paused', true);
+      }).catch(e => {
+        this.$set('error', e);
+      });
     },
 
     resume: function() {
-      axios.post('/v1/resume').then(response => {
-          this.$set('paused', false);
-        }).catch(error => {
-          this.$set('error', error);
-        }
-      );
+      axios.post('/v1/resume').then(r => {
+        this.$set('paused', false);
+      }).catch(e => {
+        this.$set('error', e);
+      });
     },
 
     pen_up: function() {
-      axios.post('/v1/pen/up').then(response => {
-          // nothing to do
-        }).catch(error => {
-          this.$set('error', error);
-        }
-      );
+      axios.post('/v1/pen/up').then(r => {
+        // nothing to do
+      }).catch(e => {
+        this.$set('error', e);
+      });
     },
 
     pen_down: function() {
-      axios.post('/v1/pen/down').then(response => {
-          // nothing to do
-        }).catch(error => {
-          this.$set('error', error);
-        }
-      );
+      axios.post('/v1/pen/down').then(r => {
+        // nothing to do
+      }).catch(e => {
+        this.$set('error', e);
+      });
     },
   },
 
