@@ -55,6 +55,24 @@ var jobs = new Vue({
         }
       );
     },
+
+    pen_up: function() {
+      axios.post('/v1/pen/up').then(response => {
+          // nothing to do
+        }).catch(error => {
+          this.$set('error', error);
+        }
+      );
+    },
+
+    pen_down: function() {
+      axios.post('/v1/pen/down').then(response => {
+          // nothing to do
+        }).catch(error => {
+          this.$set('error', error);
+        }
+      );
+    },
   },
 
   // hooks
