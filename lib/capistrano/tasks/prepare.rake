@@ -64,12 +64,12 @@ namespace :deploy do
 		end
 	end
 
-	desc "Run server"
-	task :run do
+	desc "Start server"
+	task :start do
 		on roles(:all) do |host|
 			execute "bash", "#{fetch(:deploy_to)}/current/bin/run.sh"
 		end
 	end
 
-	after :finishing, :run
+	after :finishing, :start
 end

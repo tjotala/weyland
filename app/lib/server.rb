@@ -11,14 +11,18 @@ require 'jobs'
 class AxiDrawServer < Sinatra::Base
 	configure do
 		set :root, Platform::ROOT_PATH
+		set :port, 8080
 		set :public_folder, Platform::PUBLIC_PATH
 		enable :static
-		enable :logging
 		set :static_cache_control, [ :public, :max_age => 60 ]
-		set :port, 8080
 		set :show_exceptions, false
 		set :raise_errors, false
 
+		enable :logging
+		file = File.new("#{settings.root}/log/#{settings.environment}.log", 'a+')
+		file.sync = true
+		use Rack::CommonLogger, file
+		
 		set :jobs, Jobs.new(LocalVolume.new)
 	end
 
