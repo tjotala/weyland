@@ -19,10 +19,10 @@ class AxiDrawServer < Sinatra::Base
 		set :raise_errors, false
 
 		enable :logging
-		file = File.new("#{settings.root}/log/#{settings.environment}.log", 'a+')
+		file = File.new("/var/weyland/shared/#{settings.environment}.log", 'a+')
 		file.sync = true
 		use Rack::CommonLogger, file
-		
+
 		set :jobs, Jobs.new(LocalVolume.new)
 	end
 
