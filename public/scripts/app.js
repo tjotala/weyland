@@ -1,19 +1,17 @@
 var jobs = new Vue({
   el: '#jobs',
   data: {
-    jobs: false,
-    error: false
+    jobs: [ ],
+    errors: [ ]
   },
 
-  ready: function() {
+  created: function() {
   	console.log("requesting jobs");
-    this.$http({ url: '/v1/jobs', method: 'GET' }).then(
-      function success(response) {
-        this.$set('jobs', response.data);
-      },
-      function failure(response) {
-        this.$set('error', true);
+    axios.get('jobs').then(response => {
+        this.jobs = response.data;
+      }).catch(error => {
+        this.errors.push(error);
       }
     );
   },
-})
+});

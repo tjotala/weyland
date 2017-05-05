@@ -114,7 +114,7 @@ class AxiDrawServer < Sinatra::Base
 	# @method GET
 	# @return 200 configuration items
 	#
-	get '/api/config' do
+	get '/v1/config' do
 		json config
 	end
 
@@ -124,7 +124,7 @@ class AxiDrawServer < Sinatra::Base
 	# @method GET
 	# @return 200 ok
 	#
-	get '/api/ping' do
+	get '/v1/ping' do
 		content_type :text
 		'ok'
 	end
@@ -135,7 +135,7 @@ class AxiDrawServer < Sinatra::Base
 	# @method POST
 	# @return 204 ok
 	#
-	post '/api/quit' do
+	post '/v1/quit' do
 		Thread.new do
 			Kernel::sleep(2)
 			Platform::quit
@@ -149,7 +149,7 @@ class AxiDrawServer < Sinatra::Base
 	# @method POST
 	# @return 204 ok
 	#
-	post '/api/shutdown' do
+	post '/v1/shutdown' do
 		Thread.new do
 			Kernel::sleep(2)
 			Platform::shutdown
@@ -167,7 +167,7 @@ class AxiDrawServer < Sinatra::Base
 	# @method GET
 	# @return 200 list of print jobs
 	#
-	get '/api/jobs/?' do
+	get '/v1/jobs/?' do
 		json settings.jobs.list
 	end
 
@@ -178,7 +178,7 @@ class AxiDrawServer < Sinatra::Base
 	# @param id
 	# @return 200 print job
 	#
-	get '/api/jobs/:id' do
+	get '/v1/jobs/:id' do
 		json settings.jobs.get_metadata(params[:id])
 	end
 
@@ -189,7 +189,7 @@ class AxiDrawServer < Sinatra::Base
 	# @param id
 	# @return 200 print job
 	#
-	get '/api/jobs/:id/content' do
+	get '/v1/jobs/:id/content' do
 		send_file(settings.jobs.get_content(params[:id]), :type => 'image/svg+xml', :disposition => 'inline')
 	end
 
@@ -201,7 +201,7 @@ class AxiDrawServer < Sinatra::Base
 	# @return 201 new print job
 	# @return 400 bad print job
 	#
-	post '/api/jobs/?' do
+	post '/v1/jobs/?' do
 		json settings.jobs.create(@request_json[:svg])
 	end
 
@@ -214,7 +214,7 @@ class AxiDrawServer < Sinatra::Base
 	# @return 204 no content
 	# @return 404 if no such print job
 	#
-	delete '/api/jobs/:id' do
+	delete '/v1/jobs/:id' do
 		settings.jobs.delete(params[:id])
 		status 204
 	end
