@@ -17,14 +17,14 @@ describe AxiDrawServer do
 	end
 
 	it "should respond to ping" do
-		get "/api/ping"
+		get "/v1/ping"
 		expect( last_response ).to be_ok
 		expect( last_response ).to be_plain_text
 		expect( last_response.body ).to eq("ok")
 	end
 
 	it "should respond to configuration request" do
-		get "/api/config"
+		get "/v1/config"
 		expect( last_response ).to be_ok
 		expect( last_response ).to be_json
 	end
@@ -33,7 +33,7 @@ describe AxiDrawServer do
 		expect( Kernel ).to receive(:sleep) # and eat it
 		expect( Platform ).to receive(:quit) # and eat it
 		expect( Thread ).to receive(:new).and_yield # don't spawn the background thread
-		post "/api/quit"
+		post "/v1/quit"
 		expect( last_response ).to be_empty
 	end
 
@@ -41,7 +41,7 @@ describe AxiDrawServer do
 		allow( Kernel ).to receive(:sleep) # and eat it
 		expect( Platform ).to receive(:shutdown) # and eat it
 		expect( Thread ).to receive(:new).and_yield # don't spawn the background thread
-		post "/api/shutdown"
+		post "/v1/shutdown"
 		expect( last_response ).to be_empty
 	end
 
