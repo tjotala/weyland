@@ -5,7 +5,7 @@ gem 'sinatra'
 gem 'sinatra-base'
 gem 'sinatra-json'
 gem 'rack'
-gem 'tilt'
+gem 'tilt', '~> 1.4.1'
 
 # deployment tools
 group :development, :test do

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-nohup bundle exec /var/weyland/current/app/run.rb > /dev/null 2>&1 &
+cd /var/weyland/current
+nohup bundle exec ruby ./app/run.rb > /dev/null 2>&1 &
