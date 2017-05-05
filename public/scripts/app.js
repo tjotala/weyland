@@ -7,7 +7,7 @@ var jobs = new Vue({
 
   created: function() {
   	console.log("requesting jobs");
-    axios.get('jobs').then(response => {
+    axios.get('/v1/jobs').then(response => {
         this.jobs = response.data;
       }).catch(error => {
         this.errors.push(error);
