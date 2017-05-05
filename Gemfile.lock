@@ -24,6 +24,8 @@ GEM
       rack (~> 1.5)
       rack-protection (~> 1.4)
       tilt (>= 1.3, < 3)
+    sinatra-base (1.0)
+      rack (>= 1.0)
     sinatra-json (0.1.0)
       multi_json (~> 1.0)
       sinatra (~> 1.0)
@@ -40,7 +42,7 @@ PLATFORMS
 DEPENDENCIES
   capistrano
   capistrano-bundler
-  sinatra
+  sinatra-base
   sinatra-json
 
 BUNDLED WITH

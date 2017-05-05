@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
 # common gems
-gem 'sinatra'
 gem 'sinatra-base'
 gem 'sinatra-json'
 
