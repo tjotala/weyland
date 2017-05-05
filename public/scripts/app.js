@@ -36,8 +36,9 @@ var jobs = new Vue({
         }
       );
     }
-  }
+  },
 
+  // hooks
   created: function() {
     refresh();
   },
