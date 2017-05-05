@@ -4,6 +4,8 @@ source 'https://rubygems.org'
 gem 'sinatra'
 gem 'sinatra-base'
 gem 'sinatra-json'
+gem 'rack'
+gem 'tilt'
 
 # deployment tools
 group :development, :test do

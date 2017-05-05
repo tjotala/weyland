@@ -42,9 +42,11 @@ PLATFORMS
 DEPENDENCIES
   capistrano
   capistrano-bundler
+  rack
   sinatra
   sinatra-base
   sinatra-json
+  tilt
 
 BUNDLED WITH
    1.14.6
