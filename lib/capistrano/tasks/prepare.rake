@@ -20,6 +20,7 @@ namespace :deploy do
 		desc "Upgrade base system"
 		task :system do
 			on roles(:all) do |host|
+				sudo "apt-get", "-y remove pulseaudio"
 				sudo "apt-get", "-y update"
 				sudo "apt-get", "-y upgrade"
 				sudo "apt-get", "-y install ntpdate"

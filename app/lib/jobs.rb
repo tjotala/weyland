@@ -29,6 +29,10 @@ class Jobs
 		Job.new(path_from(id)).remove
 	end
 
+	def clear
+		list.each { |job| job.remove }
+	end
+
 	private
 
 	def base_path

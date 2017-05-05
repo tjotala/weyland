@@ -206,16 +206,26 @@ class AxiDrawServer < Sinatra::Base
 	end
 
 	##
-	# Delete Print Job
+	# Delete All Print Jobs
 	#
 	# @method DELETE
-	# @param id
-	# @body password
 	# @return 204 no content
 	# @return 404 if no such print job
 	#
 	delete '/v1/jobs/:id' do
 		settings.jobs.delete(params[:id])
+		status 204
+	end
+
+	##
+	# Delete Print Job
+	#
+	# @method DELETE
+	# @param id
+	# @return 204 no content
+	#
+	delete '/v1/jobs/?' do
+		settings.jobs.clear()
 		status 204
 	end
 
