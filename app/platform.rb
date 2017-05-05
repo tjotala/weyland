@@ -6,9 +6,9 @@ module Platform
 	BIN_PATH = File.expand_path(File.join(ROOT_PATH, '..', 'bin')).freeze
 	PUBLIC_PATH = File.expand_path(File.join(ROOT_PATH, '..', 'public')).freeze
 	# TODO: make this platform-agnostic
-	LOCAL_PATH = '/var/axidraw'.freeze
+	LOCAL_PATH = File.join(File::SEPARATOR, 'var', 'weyland', 'shared').freeze
 
-	PRODUCT_NAME = 'RemoteAxiDraw'.freeze
+	PRODUCT_NAME = 'Weyland'.freeze
 	PRODUCT_VERSION = '1.0'.freeze
 	PRODUCT_FULLNAME = "#{PRODUCT_NAME}/#{PRODUCT_VERSION}".freeze
 
@@ -22,7 +22,7 @@ module Platform
 
 	if pi?
 		PLATFORM_TYPE = 'pi'.freeze
-		LOGS_PATH = File.join(File::SEPARATOR, 'var', 'log', 'axidraw').freeze
+		LOGS_PATH = File.join(File::SEPARATOR, 'var', 'weyland', 'shared').freeze
 	else
 		PLATFORM_TYPE = 'pc'.freeze
 		LOGS_PATH = File.expand_path(ENV['TEMP'] || ENV['TMP']).freeze

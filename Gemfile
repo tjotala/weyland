@@ -13,3 +13,10 @@ group :development, :test do
 	gem 'capistrano'
 	gem 'capistrano-bundler'
 end
+
+group :test do
+	gem 'rake'
+	gem 'rspec'
+	gem 'fakefs'
+	gem 'rack-test'
+end
