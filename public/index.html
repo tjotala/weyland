@@ -29,14 +29,17 @@
 							<td>{{job.created}}</td>
 							<td>{{job.size}}</td>
 							<td>
-								<button type="button" class="btn btn-info" v-on:click="view({{job.id}})"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;View</button>
-								<button type="button" class="btn btn-warning" v-on:click="delete({{job.id}})"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete</button>
+								<button type="button" class="btn btn-info" v-on:click="view(job.id)"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;View</button>
+								<button type="button" class="btn btn-warning" v-on:click="delete(job.id)"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete</button>
 							</td>
 						</tr>
 					</template>
 				</tbody>
 			</table>
-			<button type="button" class="btn btn-danger" v-on:click="clear()"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete All</button>
+			<button type="button" class="btn btn-success" v-on:click="refresh()"><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;Refresh</button>
+			<button type="button" class="btn btn-primary" v-bind:disabled="paused" v-on:click="pause()"><i class="fa fa-pause" aria-hidden="true"></i>&nbsp;Pause</button>
+			<button type="button" class="btn btn-primary" v-bind:disabled="!paused" v-on:click="resume()"><i class="fa fa-play" aria-hidden="true"></i>&nbsp;Resume</button>
+			<button type="button" class="btn btn-danger" v-bind:disabled="jobs.length == 0" v-on:click="clear()"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete All</button>
 		</div>
 	</body>
 	<script src="lib/scripts/vue.min.js"></script>

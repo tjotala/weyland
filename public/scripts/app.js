@@ -2,7 +2,8 @@ var jobs = new Vue({
   el: '#jobs',
   data: {
     jobs: [ ],
-    error: [ ]
+    paused: false,
+    error: [ ],
   },
 
   methods: {
@@ -21,7 +22,7 @@ var jobs = new Vue({
 
     delete: function(job_id) {
       axios.delete('/v1/jobs/' + job_id).then(response => {
-          refresh();
+          this.refresh();
         }).catch(error => {
           this.$set('error', error);
         }
@@ -30,16 +31,34 @@ var jobs = new Vue({
 
     clear: function() {
       axios.delete('/v1/jobs').then(response => {
-          refresh();
+          this.refresh();
         }).catch(error => {
           this.$set('error', error);
         }
       );
-    }
+    },
+
+    pause: function() {
+      axios.post('/v1/pause').then(response => {
+          this.$set('paused', true);
+        }).catch(error => {
+          this.$set('error', error);
+        }
+      );
+    },
+
+    resume: function() {
+      axios.post('/v1/resume').then(response => {
+          this.$set('paused', false);
+        }).catch(error => {
+          this.$set('error', error);
+        }
+      );
+    },
   },
 
   // hooks
   created: function() {
-    refresh();
+    this.refresh();
   },
 });
