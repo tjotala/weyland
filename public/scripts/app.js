@@ -6,6 +6,7 @@ var jobs = new Vue({
   },
 
   ready: function() {
+  	console.log("requesting jobs");
     this.$http({ url: '/api/jobs', method: 'GET' }).then(
       function success(response) {
         this.$set('jobs', response.data);
