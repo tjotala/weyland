@@ -87,8 +87,6 @@ class AxiDrawServer < Sinatra::Base
 				platform: Platform::name,
 				environment: settings.environment,
 				time: Time.now.utc.iso8601,
-				zone: Time.now.zone,
-				offset: Time.now.utc_offset / 60,
 				total_space: LocalVolume.new.total_space,
 				available_space: LocalVolume.new.available_space,
 			}
