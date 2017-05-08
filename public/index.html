@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="weylandApp">
+	<head>
+		<title>Weyland</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="styles/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="styles/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="styles/app.css">
+		<script src="scripts/angular.min.js"></script>
+		<script src="scripts/app.js"></script>
+	</head>
+	<body ng-cloak>
+		<div class="container">
+			<div class="page-header">
+				<h1>Weyland</h1>
+				<img class="logo" src="images/logo.jpg">
+			</div>
+			<div class="panel panel-default" ng-controller="weylandJobsCtrl">
+				<div class="panel-heading">
+					<h3>Print Jobs</h3>
+				</div>
+				<div class="panel-body">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Name</th>
+								<th>Created</th>
+								<th>Size</th>
+								<th>Status</th>
+								<th>Updated</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="job in jobs track by job.id">
+								<td>{{job.id}}</td>
+								<td>{{job.name}}</td>
+								<td>{{job.created}}</td>
+								<td>{{job.size}}</td>
+								<td>{{job.status}}</td>
+								<td>{{job.updated}}</td>
+								<td>
+									<button type="button" class="btn btn-primary" ng-disabled="!is_printable(job.status)" ng-click="print(job.id)"><i class="fa fa-print" aria-hidden="true"></i>&nbsp;Print</button>
+									<button type="button" class="btn btn-info" ng-click="view(job.id)"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;View</button>
+									<button type="button" class="btn btn-warning" ng-click="delete(job.id)"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete</button>
+								</td>
+							</tr>
+							<tr ng-hide="jobs.length">
+								<td colspan="7" class="text-center">no print jobs</td>
+							</tr>
+						</tbody>
+					</table>
+					<div>
+						<button type="button" class="btn btn-success" ng-click="refresh()"><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;Refresh</button>
+						<button type="button" class="btn btn-danger" ng-disabled="jobs.length == 0" ng-click="clear()"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete All</button>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default" ng-controller="weylandPrinterCtrl">
+				<div class="panel-heading">
+					Plotter Version:
+						<span ng-show="loading">Fetching... <i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>
+						<span ng-hide="loading">{{printer_version || 'unknown'}} <i role="button" class="fa fa-refresh" aria-hidden="true" ng-click="get_version()"></i></span>
+				</div>
+				<div class="panel-body">
+					<button type="button" class="btn btn-primary" ng-click="pen_up()"><i class="fa fa-pencil" aria-hidden="true"></i><i class="fa fa-arrow-up" aria-hidden="true"></i>&nbsp;Pen Up</button>
+					<button type="button" class="btn btn-primary" ng-click="pen_down()"><i class="fa fa-pencil" aria-hidden="true"></i><i class="fa fa-arrow-down" aria-hidden="true"></i>&nbsp;Pen Down</button>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
