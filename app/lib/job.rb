@@ -76,7 +76,7 @@ class Job
 	end
 
 	def to_json(*args)
-		{
+		basic = {
 			id: @id,
 			name: @name,
 			size: @size,
@@ -84,7 +84,16 @@ class Job
 			updated: @updated.utc.iso8601,
 			status: @status,
 			convert: @convert,
-		}.select { |k, v| v }.to_json(args)
+		}
+		print_log = File.read(print_log_name) rescue nil
+		if print_log
+			basic[:print_stats] = {
+				elapsed: Time.parse(print_log[/Elapsed time: (\d+:\d+:\d+)/, 1]),
+				drawn: print_log[/Length of path drawn: (\d+\.\d+)/, 1].to_f,
+				moved: print_log[/Total distance moved: (\d+\.\d+)/, 1].to_f,
+			}
+		end
+		basic.select { |k, v| v }.to_json(args)
 	end
 
 	def content_name
