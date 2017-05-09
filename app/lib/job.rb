@@ -42,7 +42,7 @@ class Job
 		if @convert
 			save(STATUS_CONVERTING)
 			conversion_log = Platform::run("inkscape --without-gui --export-plain-svg=#{print_name} --export-text-to-path #{content_name}")
-			conflicted_resource("conversion failed") if output =~ /error/m
+			conflicted_resource("conversion failed") if conversion_log =~ /error/m
 			save(STATUS_PRINTING)
 			print_log = plotter.plot(print_name)
 		else
@@ -53,6 +53,10 @@ class Job
 		plotter.home
 		true
 	rescue RuntimeError => e
+		save(STATUS_FAILED)
+		$stderr.puts "failed to print, reason: #{e.message}"
+		false
+	rescue
 		save(STATUS_FAILED)
 		$stderr.puts "failed to print, reason: #{e.message}"
 		false
