@@ -12,7 +12,7 @@ describe Platform do
 
 		context "BIN_PATH" do
 			it "should be readable" do
-				expect( Dir.exist?(Platform::BIN_PATH) ).to be true
+				expect( Platform::BIN_PATH ).to be_readable_path
 			end
 		end
 
@@ -79,7 +79,6 @@ describe Platform do
 		it "should be valid" do
 			expect( Platform::PLATFORM_TYPE ).to be_a(String)
 			expect( Platform::PLATFORM_TYPE ).to be_frozen
-			expect( Platform::pi? ^ Platform::pc? ).to be true
 		end
 	end
 end

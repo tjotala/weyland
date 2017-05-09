@@ -1,5 +1,3 @@
-require 'open3'
-
 module Platform
 	ROOT_PATH = File.expand_path(File.dirname(__FILE__)).freeze
 	LIB_PATH = File.expand_path(File.join(ROOT_PATH, 'lib')).freeze
@@ -10,53 +8,23 @@ module Platform
 	PRODUCT_VERSION = '1.0'.freeze
 	PRODUCT_FULLNAME = "#{PRODUCT_NAME}/#{PRODUCT_VERSION}".freeze
 
-	def self.pi?
-		RUBY_PLATFORM == 'arm-linux-gnueabihf'
-	end
+	PLATFORM_TYPE_PI = 'pi'.freeze
+	PLATFORM_TYPE_MAC = 'mac'.freeze
+	PLATFORM_TYPE_PC = 'pc'.freeze
 
-	def self.pc?
-		!self.pi?
-	end
-
-	if pi?
-		PLATFORM_TYPE = 'pi'.freeze
-		SHARED_PATH = File.join(File::SEPARATOR, 'var', 'weyland', 'shared').freeze
-		QUEUE_PATH = File.join(SHARED_PATH, 'queue').freeze
-		LOGS_PATH = File.join(SHARED_PATH, 'logs').freeze
+	case RUBY_PLATFORM
+	when /arm-linux/
+		PLATFORM_TYPE = PLATFORM_TYPE_PI
+	when /darwin/
+		PLATFORM_TYPE = PLATFORM_TYPE_MAC
+	when /mswin/
+		PLATFORM_TYPE = PLATFORM_TYPE_PC
 	else
-		PLATFORM_TYPE = 'pc'.freeze
-		LOGS_PATH = File.expand_path(ENV['TEMP'] || ENV['TMP']).freeze
+		raise "unsupported platform: #{RUBY_PLATFORM}"
 	end
+
 	PLATFORM_PATH = File.join(LIB_PATH, PLATFORM_TYPE).freeze
-
 	$LOAD_PATH.unshift(Platform::LIB_PATH, Platform::PLATFORM_PATH)
-
-	def self.name
-		%x[uname -a].chomp.strip
-	end
-
-	def self.run(cmd, ignore_errors = false)
-		out, err, status = Open3.capture3(cmd)
-		conflicted_resource(caller[0]) if status.to_i != 0 and !ignore_errors
-		out + err
-	end
-
-	def self.quit
-		Process.kill('TERM', Process.pid)
-	end
-
-	def self.shutdown
-		exec("sudo shutdown -h now") if pi?
-	end
-
-	def self.which(cmd)
-		exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
-		ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-			exts.each do |ext|
-				exe = File.join(path, "#{cmd}#{ext}")
-				return exe if File.executable?(exe) && !File.directory?(exe)
-			end
-		end
-		nil
-	end
 end
+
+require File.join(Platform::PLATFORM_PATH, 'platform.rb')
