@@ -6,14 +6,17 @@ require 'errors'
 class Job
 	attr_reader :path, :id, :name, :size, :created, :updated, :status, :convert
 
+	CONVERSION_TOOL = 'inkscape'
+
 	STATUS_PENDING = 'pending'
 	STATUS_CONVERTING = 'converting'
 	STATUS_PRINTING = 'printing'
 	STATUS_PRINTED = 'printed'
 	STATUS_FAILED = 'failed'
+	STATUS_DELETED = 'deleted'
 
-	def ==(rhs)
-		@id == rhs.id && @name == rhs.name && @size == rhs.size && @created == rhs.created && @updated == rhs.updated && @status == rhs.status
+	def eql?(rhs)
+		self.to_json == rhs.to_json
 	end
 
 	def pending?
@@ -41,7 +44,7 @@ class Job
 		conversion_log = print_log = nil
 		if @convert
 			save(STATUS_CONVERTING)
-			conversion_log = Platform::run("inkscape --without-gui --export-plain-svg=#{print_name} --export-text-to-path #{content_name}")
+			conversion_log = Platform::run("#{CONVERSION_TOOL} --without-gui --export-plain-svg=#{print_name} --export-text-to-path #{content_name}")
 			conflicted_resource("conversion failed") if conversion_log =~ /error/m
 			save(STATUS_PRINTING)
 			print_log = plotter.plot(print_name)
@@ -68,9 +71,10 @@ class Job
 
 	def purge
 		FileUtils.rm_rf(@path)
+		@status = STATUS_DELETED # not persisted though
 		self
 	rescue Errno::ENOENT => e
-		not_found
+		no_such_resource(@id)
 	rescue Errno::EACCES => e
 		forbidden
 	end
@@ -153,7 +157,7 @@ class Job
 			json[:path] = path
 			Job.new(json)
 		rescue Errno::ENOENT => e
-			not_found
+			no_such_resource(File::basename(path))
 		rescue Errno::EACCES => e
 			forbidden
 		end

@@ -1,5 +1,5 @@
 class Plotter
-	TOOL_PATH = File.join(Platform::BIN_PATH, 'axidraw_standalone').freeze
+	TOOL_PATH = File.expand_path(File.join(Platform::BIN_PATH, 'axidraw_standalone')).freeze
 
 	def version
 		ver = manual('version-check')

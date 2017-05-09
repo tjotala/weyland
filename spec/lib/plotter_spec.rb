@@ -3,7 +3,15 @@ require 'json'
 require 'plotter'
 
 describe Plotter do
+	before(:each) do
+		FakeFS.deactivate!
+	end
+
+	after(:each) do
+		FakeFS.activate!
+	end
+
 	it "should have valid tool path" do
-		expect( File.exist(Plotter.new.TOOL_PATH) ).to be_true
+		expect( Plotter::TOOL_PATH ).to be_readable_file
 	end
 end
