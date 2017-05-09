@@ -42,10 +42,11 @@ class Jobs
 		job
 	end
 
-	def print(id)
+	def print(id, convert)
 		job = get(id)
 		conflicted_resource("already printing") if job.printing?
 		too_many_requests("another job is already printing") if @queue.length > 0
+		job.convert = convert unless convert.nil?
 		@queue.push(job)
 		job
 	end

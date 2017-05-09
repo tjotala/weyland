@@ -4,7 +4,7 @@ require 'time'
 require 'errors'
 
 class Job
-	attr_reader :path, :id, :name, :size, :created, :updated, :status
+	attr_reader :path, :id, :name, :size, :created, :updated, :status, :convert
 
 	STATUS_PENDING = 'pending'
 	STATUS_CONVERTING = 'converting'
@@ -32,9 +32,13 @@ class Job
 		@status == STATUS_FAILED
 	end
 
-	def print(plotter, convert)
+	def convert=(state)
+		@convert = state
+		save
+	end
+
+	def print(plotter)
 		conversion_log = print_log = nil
-		@convert = convert unless convert.nil?
 		if @convert
 			save(STATUS_CONVERTING)
 			conversion_log = Platform::run("inkscape --without-gui --export-plain-svg=#{print_name} --export-text-to-path #{content_name}")
