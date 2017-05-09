@@ -88,7 +88,7 @@ class Job
 		print_log = File.read(print_log_name) rescue nil
 		if print_log
 			basic[:print_stats] = {
-				elapsed: Time.parse(print_log[/Elapsed time: (\d+:\d+:\d+)/, 1]),
+				elapsed: Time.parse(print_log[/Elapsed time: (\d+:\d+:\d+)/, 1]).strftime('%H:%M:%S'),
 				drawn: print_log[/Length of path drawn: (\d+\.\d+)/, 1].to_f,
 				moved: print_log[/Total distance moved: (\d+\.\d+)/, 1].to_f,
 			}
