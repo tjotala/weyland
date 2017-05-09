@@ -254,11 +254,12 @@ class AxiDrawServer < Sinatra::Base
 	# @method POST
 	# @body svg SVG file
 	# @body name name (optional)
+	# @body convert convert: true/false (optional)
 	# @return 201 new print job
 	# @return 400 bad print job
 	#
 	post '/v1/jobs/?' do
-		json settings.jobs.create(@request_json[:svg], @request_json[:name])
+		json settings.jobs.create(@request_json[:svg], @request_json[:name], @request_json[:convert].nil? ? nil : @request_json[:convert] == 'true')
 		status 201
 	end
 
@@ -267,13 +268,14 @@ class AxiDrawServer < Sinatra::Base
 	#
 	# @method POST
 	# @param id job ID
+	# @param convert convert: true/false (optional, default is false)
 	# @return 200 OK
 	# @return 404 bad print job ID
 	# @return 409 already printing
 	# @return 
 	#
 	post '/v1/jobs/:id/print' do
-		json settings.jobs.print(params[:id])
+		json settings.jobs.print(params[:id], params[:convert].nil? ? nil : params[:convert] == 'true')
 		status 200
 	end
 

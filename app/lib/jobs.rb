@@ -35,9 +35,9 @@ class Jobs
 		Job::get(path_from(id))
 	end
 
-	def create(svg, name)
+	def create(svg, name, convert)
 		id = new_id
-		job = Job::create(path_from(id), id, svg, name)
+		job = Job::create(path_from(id), id, svg, name, convert)
 		@queue.push(job)
 		job
 	end

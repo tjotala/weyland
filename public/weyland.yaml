@@ -30,18 +30,25 @@ parameters:
     schema:
       type: object
       required:
-      - name
       - svg
       properties:
         name:
-          description: "Print job name"
+          description: "Print job name (default: none)"
           type: string
+          required: false
+          default: ""
           example: "Test Print"
         svg:
           description: "Print job content (encoded as JSON-safe string)"
           type: string
           format: binary
           example: "see a SVG file"
+        convert:
+          description: "Convert print job via Inkscape"
+          type: boolean
+          required: false
+          default: false
+          example: true
 
 definitions:
   server_configuration:
@@ -323,12 +330,21 @@ paths:
       - Jobs
       parameters:
       - $ref: "#/parameters/job_id"
+      - convert:
+          description: "Convert the print job with Inkscape (overrides original request)"
+          name: convert
+          in: query
+          type: boolean
+          required: false
+          default: false
+          example: true
       produces:
       - "application/json"
       responses:
         200:
           description: "OK"
-          $ref: "#/definitions/print_job"
+          schema:
+            $ref: "#/definitions/print_job"
         409:
           description: "print job is already printing"
         429:

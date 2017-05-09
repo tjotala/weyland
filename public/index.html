@@ -28,6 +28,7 @@
 								<th>Created</th>
 								<th>Size</th>
 								<th>Status</th>
+								<th>Convert?</th>
 								<th>Updated</th>
 								<th>Actions</th>
 							</tr>
@@ -39,6 +40,7 @@
 								<td>{{job.created}}</td>
 								<td>{{job.size}}</td>
 								<td>{{job.status}}</td>
+								<td>{{job.convert}}</td>
 								<td>{{job.updated}}</td>
 								<td>
 									<button type="button" class="btn btn-primary" ng-disabled="!is_printable(job.status)" ng-click="print(job.id)"><i class="fa fa-print" aria-hidden="true"></i>&nbsp;Print</button>

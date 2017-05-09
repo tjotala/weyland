@@ -12,6 +12,10 @@ class Job
 	STATUS_PRINTED = 'printed'
 	STATUS_FAILED = 'failed'
 
+	def ==(rhs)
+		@id == rhs.id && @name == rhs.name && @size == rhs.size && @created == rhs.created && @updated == rhs.updated && @status == rhs.status
+	end
+
 	def pending?
 		@status == STATUS_PENDING
 	end
@@ -28,8 +32,9 @@ class Job
 		@status == STATUS_FAILED
 	end
 
-	def print(plotter)
+	def print(plotter, convert)
 		conversion_log = print_log = nil
+		@convert = convert unless convert.nil?
 		if @convert
 			save(STATUS_CONVERTING)
 			conversion_log = Platform::run("inkscape --without-gui --export-plain-svg=#{print_name} --export-text-to-path #{content_name}")
@@ -70,6 +75,7 @@ class Job
 			created: @created.utc.iso8601,
 			updated: @updated.utc.iso8601,
 			status: @status,
+			convert: @convert,
 		}.select { |k, v| v }.to_json(args)
 	end
 
@@ -106,8 +112,7 @@ class Job
 		@created = obj[:created] || Time.now
 		@updated = obj[:updated] || @created
 		@status = obj[:status] || STATUS_PENDING
-
-		@convert = false
+		@convert = obj[:convert].nil? ? false : obj[:convert]
 	end
 
 	class << self
@@ -115,9 +120,9 @@ class Job
 			File.join(path, 'job.json')
 		end
 
-		def create(path, id, content, name)
+		def create(path, id, content, name, convert)
 			FileUtils.mkdir(path)
-			job = Job.new(path: path, id: id, name: name, size: content.bytesize).save
+			job = Job.new(path: path, id: id, name: name, size: content.bytesize, convert: convert).save
 			File.write(job.content_name, content)
 			job
 		rescue Errno::EACCES => e
