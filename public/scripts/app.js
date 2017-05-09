@@ -1,6 +1,6 @@
 "use strict";
 
-var weylandApp = angular.module('weylandApp', [ ]);
+var weylandApp = angular.module('weylandApp', [ 'angularMoment' ]);
 
 weylandApp.controller('weylandPrinterCtrl', function($scope, $http) {
   $scope.loading = false;
@@ -77,4 +77,14 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $window, $http, $inter
   $interval(function() {
     $scope.refresh()
   }, 5000);
+});
+
+weylandApp.filter('bytes', function() {
+  return function(bytes, precision) {
+    if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
+    if (typeof precision === 'undefined') precision = 1;
+    var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
+      number = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
+  }
 });

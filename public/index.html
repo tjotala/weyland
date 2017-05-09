@@ -7,6 +7,8 @@
 		<link rel="stylesheet" type="text/css" href="styles/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="styles/app.css">
 		<script src="scripts/angular.min.js"></script>
+		<script src="scripts/moment.min.js"></script>
+		<script src="scripts/angular-moment.min.js"></script>
 		<script src="scripts/app.js"></script>
 	</head>
 	<body ng-cloak>
@@ -37,21 +39,31 @@
 							<tr ng-repeat="job in jobs track by job.id">
 								<td>{{job.id}}</td>
 								<td>{{job.name}}</td>
-								<td>{{job.created}}</td>
-								<td class="text-right">{{job.size}}</td>
+								<td am-time-ago="job.created | amParse" title="{{job.created}}"></td>
+								<td class="text-right" title="{{job.size | number}} bytes">{{job.size | bytes}}</td>
 								<td>{{job.status}} <span ng-show="job.print_stats">({{job.print_stats.elapsed}})</span></td>
 								<td class="text-center"><i class="fa fa-check" aria-hidden="true" ng-show="job.convert"></i></td>
-								<td>{{job.updated}}</td>
+								<td am-time-ago="job.updated | amParse" title="{{job.updated}}"></td>
 								<td>
 									<button type="button" class="btn btn-primary" ng-disabled="!is_printable(job.status)" ng-click="print(job.id)"><i class="fa fa-print" aria-hidden="true"></i>&nbsp;Print</button>
 									<button type="button" class="btn btn-info" ng-click="view(job.id)"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;View</button>
 									<button type="button" class="btn btn-warning" ng-click="delete(job.id)"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete</button>
 								</td>
 							</tr>
-							<tr ng-hide="jobs.length">
-								<td colspan="7" class="text-center">no print jobs</td>
-							</tr>
 						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="8" class="text-center">
+									<ng-pluralize count="jobs.length"
+										when="{
+											'0': '0 jobs',
+											'one': '1 job',
+											'other': '{} jobs',
+										}">
+									<ng-pluralize>
+								</td>
+							</tr>
+						</tfoot>
 					</table>
 					<div>
 						<button type="button" class="btn btn-success" ng-click="refresh()"><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;Refresh</button>
