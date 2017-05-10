@@ -260,7 +260,7 @@ class AxiDrawServer < Sinatra::Base
 	# @return 400 bad print job
 	#
 	post '/v1/jobs/?' do
-		json settings.jobs.create(@request_json[:svg], @request_json[:name], @request_json[:convert].nil? ? nil : @request_json[:convert] == 'true')
+		json settings.jobs.create(@request_json[:svg], @request_json[:name], @request_json[:convert].nil? ? nil : @request_json[:convert])
 		status 201
 	end
 
