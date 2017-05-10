@@ -32,6 +32,7 @@ namespace :doctor do
 			svg = File.read("bin/axidraw_standalone/AxiDraw_trivial.svg")
 			body = {
 				svg: svg,
+				convert: true,
 				name: "Test Print",
 			}
 
