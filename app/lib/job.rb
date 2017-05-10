@@ -6,8 +6,6 @@ require 'errors'
 class Job
 	attr_reader :path, :id, :name, :size, :created, :updated, :status, :convert
 
-	CONVERSION_TOOL = 'inkscape'
-
 	STATUS_PENDING = 'pending'
 	STATUS_CONVERTING = 'converting'
 	STATUS_PRINTING = 'printing'
@@ -40,11 +38,11 @@ class Job
 		save
 	end
 
-	def print(plotter)
+	def print(converter, plotter)
 		conversion_log = print_log = nil
 		if @convert
 			save(STATUS_CONVERTING)
-			conversion_log = Platform::run("#{CONVERSION_TOOL} --without-gui --export-plain-svg=#{print_name} --export-text-to-path #{content_name}")
+			conversion_log = converter.convert(content_name, print_name)
 			conflicted_resource("conversion failed") if conversion_log =~ /error/m
 			save(STATUS_PRINTING)
 			print_log = plotter.plot(print_name)

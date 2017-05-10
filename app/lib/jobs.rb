@@ -5,10 +5,11 @@ require 'thread'
 require 'job'
 
 class Jobs
-	attr_reader :volume, :plotter
+	attr_reader :volume, :converter, :plotter
 
-	def initialize(volume, plotter)
+	def initialize(volume, converter, plotter)
 		@volume = volume
+		@converter = converter
 		@plotter = plotter
 		@stopped = false
 		@thread = nil
@@ -16,7 +17,7 @@ class Jobs
 		@thread = Thread.new do
 			until @stopped do
 				job = @queue.pop
-				if job.print(@plotter)
+				if job.print(@converter, @plotter)
 					# succeeded to print
 					# just leave it be, it's already marked printed
 				else

@@ -9,6 +9,7 @@ require 'json'
 require 'errors'
 require 'queue_volume'
 require 'jobs'
+require 'converter'
 require 'plotter'
 
 class AxiDrawServer < Sinatra::Base
@@ -37,7 +38,7 @@ class AxiDrawServer < Sinatra::Base
 		enable :logging
 		use Rack::CommonLogger, access_logger
 
-		set :jobs, Jobs.new(QueueVolume.new, Plotter.new)
+		set :jobs, Jobs.new(QueueVolume.new, Converter.new, Plotter.new)
 	end
 
 	configure :development do
