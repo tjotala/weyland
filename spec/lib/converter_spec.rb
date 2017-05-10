@@ -10,12 +10,12 @@ describe Converter do
 		FakeFS.activate!
 	end
 
-	it "should have valid tool path" do
+	it 'should have valid tool path' do
 		expect( Converter::TOOL_PATH ).to be_readable_file
 		expect( Converter::TOOL_PATH ).to be_executable_file
 	end
 
-	it "should be able to get version information" do
+	it 'should be able to get version information' do
 		expect( Converter.new.version ).to match(/Inkscape \d+\.\d+/)
 	end
 end

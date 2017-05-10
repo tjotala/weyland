@@ -47,7 +47,7 @@ class AxiDrawServer < Sinatra::Base
 	end
 
 	before do
-	    env["rack.errors"] =  error_logger
+	    env['rack.errors'] =  error_logger
 
 		content_type :json
 		# we don't want the client to cache these API responses
@@ -188,7 +188,8 @@ class AxiDrawServer < Sinatra::Base
 		ver = settings.jobs.plotter.version
 		logger.info "got printer version: #{ver}"
 		status 504 if ver.nil?
-		json ver
+		body = { version: ver }
+		json body
 	end
 
 	##

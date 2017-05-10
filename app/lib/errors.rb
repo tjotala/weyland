@@ -28,11 +28,11 @@ def no_such_resource(reason)
 end
 
 def unauthorized
-	raise AuthenticationError, "invalid credentials"
+	raise AuthenticationError, 'invalid credentials'
 end
 
 def forbidden
-	raise AuthorizationError, "forbidden operation"
+	raise AuthorizationError, 'forbidden operation'
 end
 
 def conflicted_resource(reason)
@@ -44,7 +44,7 @@ def too_many_requests(reason)
 end
 
 def invalid_token
-	raise TokenError #, "invalid token"
+	raise TokenError #, 'invalid token'
 end
 
 def not_implemented

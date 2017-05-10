@@ -22,8 +22,4 @@ module Platform
 	def self.shutdown
 		# no-op - not going to shutdown the Mac
 	end
-
-	def self.which(cmd)
-		%x[which cmd]
-	end
 end
