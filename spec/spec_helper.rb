@@ -80,6 +80,12 @@ RSpec::Matchers.define :be_writable_file do
 	end
 end
 
+RSpec::Matchers.define :be_executable_file do
+	match do |actual|
+		File.exist?(actual) && File.executable?(actual)
+	end
+end
+
 RSpec.configure do |config|
 	config.include FakeFS::SpecHelpers
 	config.include RSpecMixin

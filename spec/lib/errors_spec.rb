@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'json'
 require 'errors'
 
 describe "internal_error" do
