@@ -4,10 +4,11 @@ require 'time'
 require 'errors'
 
 class Job
-	attr_reader :path, :id, :name, :size, :created, :updated, :status, :convert
+	attr_reader :path, :id, :name, :size, :created, :updated, :status
 
 	STATUS_PENDING = 'pending'
 	STATUS_CONVERTING = 'converting'
+	STATUS_CONVERTED = 'converted'
 	STATUS_PRINTING = 'printing'
 	STATUS_PRINTED = 'printed'
 	STATUS_FAILED = 'failed'
@@ -21,8 +22,20 @@ class Job
 		@status == STATUS_PENDING
 	end
 
+	def convert?
+		@convert
+	end
+
+	def converting?
+		@status == STATUS_CONVERTING
+	end
+
+	def converted?
+		@status == STATUS_CONVERTED
+	end
+
 	def printing?
-		@status == STATUS_CONVERTING || @status == STATUS_PRINTING
+		@status == STATUS_PRINTING
 	end
 
 	def printed?
@@ -38,33 +51,34 @@ class Job
 		save
 	end
 
+	def convert(converter)
+		save(STATUS_CONVERTING)
+		conversion_log = converter.convert(content_name, print_name)
+		File.write(conversion_log_name, conversion_log)
+		conflicted_resource("conversion failed") if conversion_log =~ /error/m
+		save(STATUS_CONVERTED)
+	rescue
+		save(STATUS_FAILED)
+		$stderr.puts "failed to convert, reason: #{e.message}"
+	end
+
 	def print(converter, plotter)
-		conversion_log = print_log = nil
-		if @convert
-			save(STATUS_CONVERTING)
-			conversion_log = converter.convert(content_name, print_name)
-			conflicted_resource("conversion failed") if conversion_log =~ /error/m
+		if convert?
+			convert(converter) unless File.exist?(print_name)
 			save(STATUS_PRINTING)
 			print_log = plotter.plot(print_name)
 		else
 			save(STATUS_PRINTING)
 			print_log = plotter.plot(content_name)
 		end
+		File.write(print_log_name, print_log) unless print_log.nil?
 		save(STATUS_PRINTED)
 		plotter.home
 		true
-	rescue RuntimeError => e
-		save(STATUS_FAILED)
-		$stderr.puts "failed to print, reason: #{e.message}"
-		false
 	rescue
 		save(STATUS_FAILED)
 		$stderr.puts "failed to print, reason: #{e.message}"
 		false
-	ensure
-		File.write(conversion_log_name, conversion_log) unless conversion_log.nil?
-		File.write(print_log_name, print_log) unless print_log.nil?
-		#File::delete(print_name) rescue nil
 	end
 
 	def purge

@@ -21,7 +21,7 @@ describe Job do
 			expect( job.printing? ).to be(false)
 			expect( job.printed? ).to be(false)
 			expect( job.failed? ).to be(false)
-			expect( job.convert ).to be(false)
+			expect( job.convert? ).to be(false)
 			expect( Job::job_name(path) ).to be_readable_file
 			expect( job.content_name ).to be_readable_file
 		end
@@ -38,7 +38,7 @@ describe Job do
 			expect( job.printing? ).to be(false)
 			expect( job.printed? ).to be(false)
 			expect( job.failed? ).to be(false)
-			expect( job.convert ).to be(true)
+			expect( job.convert? ).to be(true)
 			expect( Job::job_name(path) ).to be_readable_file
 			expect( job.content_name ).to be_readable_file
 		end

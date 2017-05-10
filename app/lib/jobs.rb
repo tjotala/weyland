@@ -12,11 +12,23 @@ class Jobs
 		@converter = converter
 		@plotter = plotter
 		@stopped = false
-		@thread = nil
-		@queue = Queue.new
-		@thread = Thread.new do
+		@conversion_queue = Queue.new
+		@conversion_thread = Thread.new do
 			until @stopped do
-				job = @queue.pop
+				job = @conversion_queue.pop
+				if job.convert(@converter)
+					# succeeded to convert
+					# just leave it be, it's already marked converted
+				else
+					# failed to convert
+					# just leave it be, it's already marked failed
+				end
+			end
+		end
+		@print_queue = Queue.new
+		@print_thread = Thread.new do
+			until @stopped do
+				job = @print_queue.pop
 				if job.print(@converter, @plotter)
 					# succeeded to print
 					# just leave it be, it's already marked printed
@@ -39,16 +51,15 @@ class Jobs
 	def create(svg, name, convert)
 		id = new_id
 		job = Job::create(path_from(id), id, svg, name, convert)
-		@queue.push(job)
-		job
+		@conversion_queue.push(job) if convert
 	end
 
 	def print(id, convert)
 		job = get(id)
 		conflicted_resource("already printing") if job.printing?
-		too_many_requests("another job is already printing") if @queue.length > 0
+		too_many_requests("another job is already printing") if @print_queue.length > 0
 		job.convert = convert unless convert.nil?
-		@queue.push(job)
+		@print_queue.push(job)
 		job
 	end
 
