@@ -46,6 +46,14 @@ class Job
 		@status == STATUS_FAILED
 	end
 
+	def deleted?
+		@status == STATUS_DELETED
+	end
+
+	def printable?
+		!(converting? || printing? || deleted?)
+	end
+
 	def convert=(state)
 		@convert = state
 		save
@@ -55,7 +63,7 @@ class Job
 		save(STATUS_CONVERTING)
 		conversion_log = converter.convert(content_name, print_name)
 		File.write(conversion_log_name, conversion_log)
-		conflicted_resource("conversion failed") if conversion_log =~ /error/m
+		conflicted_resource('conversion failed') if conversion_log =~ /error/m
 		save(STATUS_CONVERTED)
 	rescue
 		save(STATUS_FAILED)
@@ -100,6 +108,7 @@ class Job
 			updated: @updated.utc.iso8601,
 			status: @status,
 			convert: @convert,
+			printable: printable?,
 		}
 		print_log = File.read(print_log_name) rescue nil
 		if print_log
@@ -120,6 +129,10 @@ class Job
 		File.join(@path, 'content.svg')
 	end
 
+	def print_name
+		File.join(@path, 'print.svg')
+	end
+
 	def save(new_status = nil)
 		@status = new_status || @status
 		@updated = Time.now
@@ -135,10 +148,6 @@ class Job
 
 	def print_log_name
 		File.join(@path, 'print.log')
-	end
-
-	def print_name
-		File.join(@path, 'print.svg')
 	end
 
 	def initialize(obj = { })

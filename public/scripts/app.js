@@ -63,10 +63,6 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $window, $http, $inter
     });
   };
 
-  $scope.is_printable = function(status) {
-    return status == 'pending' || status == 'printed' || status == 'failed';
-  };
-
   $scope.clear = function() {
     $http.delete('/v1/jobs').then(r => {
       $scope.refresh();
