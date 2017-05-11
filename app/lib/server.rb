@@ -32,9 +32,9 @@ class AxiDrawServer < Sinatra::Base
 		set :protection, :except => [ :http_origin ]
 		enable :static
 		set :static_cache_control, [ :public, :max_age => 60 ]
-		#set :show_exceptions, true
-		#set :raise_errors, true
-		#set :dump_errors, true
+		set :show_exceptions, false
+		set :raise_errors, true
+		set :dump_errors, false
 
 		enable :logging
 		use Rack::CommonLogger, access_logger
@@ -45,6 +45,9 @@ class AxiDrawServer < Sinatra::Base
 	configure :development do
 		set :bind, '0.0.0.0' # allow access from other hosts
 		set :static_cache_control, [ :public, :max_age => 5 ]
+		set :show_exceptions, false
+		set :raise_errors, true
+		set :dump_errors, false
 	end
 
 	before do
