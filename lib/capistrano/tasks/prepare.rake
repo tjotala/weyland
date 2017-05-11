@@ -9,7 +9,7 @@ namespace :deploy do
 
 		desc "Fetch Raspbian image"
 		task :raspbian do
-			sh "curl --location --silent --output /tmp/raspbian.zip https://downloads.raspberrypi.org/raspbian_latest"
+			sh "curl --silent --location --output /tmp/raspbian.zip https://downloads.raspberrypi.org/raspbian_latest"
 		end
 
 		desc "Create MicroSD card"
@@ -72,7 +72,7 @@ namespace :deploy do
 		desc "Install Inkscape"
 		task :inkscape do
 			on roles(:all) do |host|
-				sudo "curl", "--location --silent --output /var/cache/apt/archives/inkscape_0.92.1-1_armhf.deb http://snapshot.debian.org/archive/debian/20170216T152027Z/pool/main/i/inkscape/inkscape_0.92.1-1_armhf.deb"
+				sudo "curl", "--silent --location --output /var/cache/apt/archives/inkscape_0.92.1-1_armhf.deb http://snapshot.debian.org/archive/debian/20170216T152027Z/pool/main/i/inkscape/inkscape_0.92.1-1_armhf.deb"
 				sudo "apt-get", "-y install inkscape"
 				sudo "apt-get", "-y install python-lxml"
 			end
@@ -85,7 +85,7 @@ namespace :deploy do
 				version = "v1.2.2"
 				filename = "AxiDraw_122_MacLinux.zip"
 				ext_folder = "/home/#{fetch(:user)}/.config/inkscape/extensions"
-				execute "curl", "--silent --output #{temp_folder}/#{filename} https://github.com/evil-mad/axidraw/releases/download/#{version}/#{filename}"
+				execute "curl", "--silent --location --output #{temp_folder}/#{filename} https://github.com/evil-mad/axidraw/releases/download/#{version}/#{filename}"
 				execute "mkdir", "-p #{ext_folder}"
 				execute "unzip", "#{temp_folder}/#{filename} -d #{ext_folder}"
 				execute "rm", "#{temp_folder}/#{filename}"
