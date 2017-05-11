@@ -35,11 +35,18 @@ class RemovableVolume < Volume
 		end
 
 		def get_total_space(path)
-			# TODO
+			get_space(path)[:total]
 		end
 
 		def get_available_space(path)
-			# TODO
+			get_space(path)[:available]
+		end
+
+		private
+
+		def get_space(path)
+			df = %x[df -k #{path}].lines[1].chomp.split
+			{ total: df[3].to_i, available: df[2].to_i }
 		end
 	end
 end
