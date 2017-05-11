@@ -72,7 +72,9 @@ namespace :deploy do
 		desc "Install Inkscape"
 		task :inkscape do
 			on roles(:all) do |host|
-				sudo "apt-get", "-y install inkscape"
+				execute "curl", "--location --output /tmp/inkscape.deb http://snapshot.debian.org/archive/debian/20170216T152027Z/pool/main/i/inkscape/inkscape_0.92.1-1_armhf.deb"
+				sudo "dpkg", "-i /tmp/inkscape.deb"
+				execute "rm", "/tmp/inkscape.deb"
 				sudo "apt-get", "-y install python-lxml"
 			end
 		end

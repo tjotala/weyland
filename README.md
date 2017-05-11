@@ -89,7 +89,7 @@ nano config/deploy/staging.rb
 5) Prepare the Raspberry Pi for deployment (only needs to be done once)
 
 ```
-cap staging deploy:prepare:system
+cap staging deploy:prepare
 ```
 
 6) Deploy the code to the Raspberry Pi
