@@ -101,4 +101,34 @@ namespace :deploy do
 		end
 	end
 
+	namespace :local do
+		desc "Confgure OS X to develop locally"
+		task :setup do
+			run_locally do
+				execute "brew", "install nginx" # this barfs due to gems
+				execute "ln", "-sf #{Dir.pwd}/config/weyland.conf /usr/local/etc/nginx/servers/weyland.conf"
+			end
+		end
+
+		desc "Start nginx"
+		task :start do
+			run_locally do
+				sudo "nginx"
+			end
+		end
+
+		desc "Stop nginx"
+		task :stop do
+			run_locally do
+				sudo "nginx", "-s stop"
+			end
+		end
+
+		desc "Reload nginx"
+		task :reload do
+			run_locally do
+				sudo "nginx", "-s reload"
+			end
+		end
+	end
 end
