@@ -38,6 +38,8 @@ class AxiDrawServer < Sinatra::Base
 
 		enable :logging
 		use Rack::CommonLogger, access_logger
+		enable :protection
+        use Rack::Protection, except: :http_origin
 
 		set :jobs, Jobs.new(QueueVolume.new, Converter.new, Plotter.new)
 	end
