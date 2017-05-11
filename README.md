@@ -11,8 +11,8 @@ Hardware Parts
 * [MicroSD card](http://a.co/3a2ZoW6); minimum 8GB
 * (optional) [Case](http://a.co/1DJdba2)
 
-Software Installation
----------------------
+Preparing the MicroSD Card
+--------------------------
 1) Download latest [Raspbian Jessie](https://www.raspberrypi.org/downloads/raspbian/) ISO image
 
 2) [Write the ISO](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) onto the MicroSD card
@@ -27,7 +27,35 @@ network={
 }
 ```
 
-4) Clone the github repo
+4) Enable SSH access by creating an empty file named `ssh` in the `/boot` folder of the MicroSD card
+
+(Mac OS)
+```
+$ touch /Volumes/boot/ssh
+```
+
+5) Unmount the MicroSD card and insert it into the Raspberry Pi
+
+6) Connect the Raspberry Pi to a power supply
+
+7) Find out the IP address of the Raspberry Pi, and copy your SSH key to it
+
+```
+ssh-copy-id pi@<ip_address>
+```
+
+8) Test the SSH login
+
+```
+ssh pi@<ip_address>
+exit # from the SSH
+```
+
+Installing the Application Software
+-----------------------------------
+These steps will finish the software installation onto the MicroSD now inserted in the Raspberry Pi.
+
+1) Clone this github repo
 
 ```
 cd <work_dir>
@@ -35,54 +63,33 @@ git clone git@github.com:tjotala/weyland.git
 cd weyland
 ```
 
-4) Enable SSH access by creating an empty file named `ssh` in the `/boot` folder of the MicroSD card:
-
-```
-$ touch /boot/ssh
-```
-
-5) Connect the Raspberry Pi to a power supply
-
-6) Copy your SSH key to the Raspberry Pi
-
-```
-ssh-copy-id pi@<ip_address>
-```
-
-7) Test the SSH login
-
-```
-ssh pi@<ip_address>
-exit # from the SSH
-```
-
-8) Install [bundler](https://bundler.io/)
+2) Install [bundler](https://bundler.io/)
 
 ```
 gem install bundler
 ```
 
-9) Install all the required gems
+3) Install all the required gems
 
 ```
 cd <work_dir>/weyland
 bundle install
 ```
 
-10) Configure deployment to the target Raspberry Pi
+4) Configure deployment to the target Raspberry Pi
 
 ```
 nano config/deploy/staging.rb
 # change IP address to match
 ```
 
-11) Prepare the Raspberry Pi for deployment (only needs to be done once)
+5) Prepare the Raspberry Pi for deployment (only needs to be done once)
 
 ```
 cap staging deploy:prepare:system
 ```
 
-12) Deploy the code to the Raspberry Pi
+6) Deploy the code to the Raspberry Pi
 
 ```
 cap staging deploy
