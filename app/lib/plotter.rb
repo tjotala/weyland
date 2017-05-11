@@ -1,10 +1,11 @@
 class Plotter
-	TOOL_PATH = File.expand_path(File.join(Platform::BIN_PATH, 'axidraw_standalone')).freeze
+	TOOL_PATH = File.expand_path(File.join(Platform::BIN_PATH, 'axidraw_standalone', 'axicli.py')).freeze
+	SAMPLE_PATH = File.expand_path(File.join(Platform::BIN_PATH, 'AxiDraw_trivial.svg')).freeze
 
 	def version
 		ver = manual('version-check')
 		return nil if ver.nil?
-		{ :version => (ver[/(Firmware.+)/, 1] || '<no version>').chomp.strip }
+		(ver[/(Firmware.+)/, 1] || '<no version>').chomp.strip
 	end
 
 	def home
@@ -33,7 +34,7 @@ class Plotter
 		execute('resume', "--resumeType=#{cmd}")
 	end
 
-	def execute(mode, opt, filename = File.join(TOOL_PATH, 'AxiDraw_trivial.svg'))
-		Platform::run("cd #{TOOL_PATH}; python axicli.py --mode=#{mode} #{opt} #{filename} 2>&1", true)
+	def execute(mode, opt, filename = SAMPLE_PATH)
+		Platform::run("cd #{File.dirname(TOOL_PATH)}; #{TOOL_PATH} --mode=#{mode} #{opt} #{filename} 2>&1", true)
 	end
 end
