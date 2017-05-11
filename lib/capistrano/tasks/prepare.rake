@@ -73,7 +73,7 @@ namespace :deploy do
 		task :inkscape do
 			on roles(:all) do |host|
 				sudo "curl", "--location --silent --output /var/cache/apt/archives/inkscape_0.92.1-1_armhf.deb http://snapshot.debian.org/archive/debian/20170216T152027Z/pool/main/i/inkscape/inkscape_0.92.1-1_armhf.deb"
-				sudo "apt-get", "-y install inkscape_0.92.1-1_armhf"
+				sudo "apt-get", "-y install inkscape"
 				sudo "apt-get", "-y install python-lxml"
 			end
 		end
