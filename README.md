@@ -11,8 +11,8 @@ Hardware Parts
 * [MicroSD card](http://a.co/3a2ZoW6); minimum 8GB
 * (optional) [Case](http://a.co/1DJdba2)
 
-Preparing the MicroSD Card
---------------------------
+Preparing the MicroSD Card with the Raspberry Pi boot image
+----------------------------------------------------------
 1) Download latest [Raspbian Jessie](https://www.raspberrypi.org/downloads/raspbian/) ISO image
 
 2) [Write the ISO](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) onto the MicroSD card
@@ -29,22 +29,25 @@ network={
 
 4) Enable SSH access by creating an empty file named `ssh` in the `/boot` folder of the MicroSD card
 
-(Mac OS)
+(These steps are Mac OS)
 ```
-$ touch /Volumes/boot/ssh
+touch /Volumes/boot/ssh
 ```
 
 5) Unmount the MicroSD card and insert it into the Raspberry Pi
 
 6) Connect the Raspberry Pi to a power supply
 
-7) Find out the IP address of the Raspberry Pi, and copy your SSH key to it
+7) Find out the IP address of the Raspberry Pi. One way is to look at your WiFi access point to find the IP address of a device named "raspberrypi". Another way is to connect the Raspberry Pi to an HDMI display, keyboard and mouse and use the Pixel GUI to find out its IP address.
+
+8) Copy your SSH key to the Raspberry Pi
 
 ```
+brew install ssh-copy-id
 ssh-copy-id pi@<ip_address>
 ```
 
-8) Test the SSH login
+9) Test the SSH login. You should not be prompted for the password.
 
 ```
 ssh pi@<ip_address>
