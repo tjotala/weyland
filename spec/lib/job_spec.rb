@@ -111,6 +111,7 @@ describe Job do
 			plotter = double('Plotter')
 			expect( plotter ).to receive(:plot).with(job.content_name)
 			expect( plotter ).to receive(:home)
+			expect( plotter ).to receive(:pen).with(:up)
 			expect{ job.print(nil, plotter) }.to change(job, :updated).and change(job, :status)
 		end
 	end

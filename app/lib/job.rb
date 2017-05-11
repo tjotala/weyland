@@ -81,6 +81,7 @@ class Job
 		end
 		File.write(print_log_name, print_log) unless print_log.nil?
 		save(STATUS_PRINTED)
+		plotter.pen(:up)
 		plotter.home
 		true
 	rescue
