@@ -74,6 +74,7 @@ namespace :deploy do
 			on roles(:all) do |host|
 				execute "curl", "--location --output /tmp/inkscape.deb http://snapshot.debian.org/archive/debian/20170216T152027Z/pool/main/i/inkscape/inkscape_0.92.1-1_armhf.deb"
 				sudo "dpkg", "-i /tmp/inkscape.deb"
+				sudo "apt-get", "-f install"
 				execute "rm", "/tmp/inkscape.deb"
 				sudo "apt-get", "-y install python-lxml"
 			end
