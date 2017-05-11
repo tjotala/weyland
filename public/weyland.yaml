@@ -17,10 +17,30 @@ schemes:
 parameters:
   job_id:
     name: job_id
+    description: "Unique ID that identifies each print job. Consists of 16 hex digits."
     in: path
-    description: Print job ID
     required: true
     type: string
+    format: binary
+    example: "f2f13e3b58de5da2"
+
+  convert:
+    description: "Convert text to paths with Inkscape (overrides original request). Default is false."
+    name: convert
+    in: query
+    type: boolean
+    required: false
+    default: false
+    example: true
+
+  download:
+    description: "Controls what is returned as the Content-Disposition header value. If true, returns `attachment`. If false, returns `inline`. Default is false."
+    name: download
+    in: query
+    type: boolean
+    required: false
+    default: false
+    example: true
 
   new_print_job:
     name: new_print_job
@@ -33,7 +53,7 @@ parameters:
       - svg
       properties:
         name:
-          description: "Print job name (default: none)"
+          description: "Print job name. Default is empty string."
           type: string
           required: false
           default: ""
@@ -44,7 +64,7 @@ parameters:
           format: binary
           example: "see a SVG file"
         convert:
-          description: "Convert print job via Inkscape"
+          description: "Convert text to paths with Inkscape. Default is false."
           type: boolean
           required: false
           default: false
@@ -258,6 +278,7 @@ paths:
 
     post:
       summary: "Create New Print Job"
+      description: "Creates a new print job. The job is placed in a background queue for conversions, if conversion was requested. Either way, it will not be sent to the printer until the Print API is called."
       tags:
       - Jobs
       parameters:
@@ -310,6 +331,7 @@ paths:
       - Jobs
       parameters:
       - $ref: "#/parameters/job_id"
+      - $ref: "#/parameters/download"
       produces:
       - "image/svg+xml"
       responses:
@@ -319,25 +341,19 @@ paths:
             type: file
           headers:
             Content-Disposition:
-              description: "Tells the browser to render the content inline"
+              description: "Tells the browser whether to render the content inline, or download as attachment"
               type: string
               example: "inline"
 
   /v1/jobs/{job_id}/print:
     post:
       summary: "Print a Job"
+      description: "Puts the print job in a background queue for printing. If conversion was requested and the job had not been converted yet, it will be converted first."
       tags:
       - Jobs
       parameters:
       - $ref: "#/parameters/job_id"
-      - convert:
-          description: "Convert the print job with Inkscape (overrides original request)"
-          name: convert
-          in: query
-          type: boolean
-          required: false
-          default: false
-          example: true
+      - $ref: "#/parameters/convert"
       produces:
       - "application/json"
       responses:
