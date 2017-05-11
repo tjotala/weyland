@@ -9,7 +9,7 @@ namespace :deploy do
 
 		desc "Fetch Raspbian image"
 		task :raspbian do
-			sh "curl --location --output /tmp/raspbian.zip https://downloads.raspberrypi.org/raspbian_latest"
+			sh "curl --location --silent --output /tmp/raspbian.zip https://downloads.raspberrypi.org/raspbian_latest"
 		end
 
 		desc "Create MicroSD card"
@@ -82,11 +82,13 @@ namespace :deploy do
 		task :axidraw_ext do
 			on roles(:all) do |host|
 				temp_folder = "/tmp"
+				version = "v1.2.2"
+				filename = "AxiDraw_122_MacLinux.zip"
 				ext_folder = "/home/#{fetch(:user)}/.config/inkscape/extensions"
-				execute "wget", "-P #{temp_folder} https://github.com/evil-mad/axidraw/releases/download/v1.2.2/AxiDraw_122_MacLinux.zip"
+				execute "curl", "--silent --output #{temp_folder}/#{version} https://github.com/evil-mad/axidraw/releases/download/#{version}/#{filename}"
 				execute "mkdir", "-p #{ext_folder}"
-				execute "unzip", "#{temp_folder}/AxiDraw_122_MacLinux.zip -d #{ext_folder}"
-				execute "rm", "#{temp_folder}/AxiDraw_122_MacLinux.zip"
+				execute "unzip", "#{temp_folder}/#{filename} -d #{ext_folder}"
+				execute "rm", "#{temp_folder}/#{filename}"
 			end
 		end
 
