@@ -10,7 +10,7 @@ module Platform
 
 	PLATFORM_TYPE_PI = 'pi'.freeze
 	PLATFORM_TYPE_MAC = 'mac'.freeze
-	PLATFORM_TYPE_PC = 'pc'.freeze
+	PLATFORM_TYPE_WIN = 'win'.freeze
 
 	case RUBY_PLATFORM
 	when /arm-linux/
@@ -18,7 +18,7 @@ module Platform
 	when /darwin/
 		PLATFORM_TYPE = PLATFORM_TYPE_MAC
 	when /mswin/
-		PLATFORM_TYPE = PLATFORM_TYPE_PC
+		PLATFORM_TYPE = PLATFORM_TYPE_WIN
 	else
 		raise "unsupported platform: #{RUBY_PLATFORM}"
 	end
