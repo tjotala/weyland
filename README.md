@@ -54,8 +54,8 @@ ssh pi@<ip_address>
 exit # from the SSH
 ```
 
-Installing the Application Software
------------------------------------
+Installing the Software on Raspberry Pi
+---------------------------------------
 These steps will finish the software installation onto the MicroSD now inserted in the Raspberry Pi.
 
 1) Clone this github repo
@@ -96,4 +96,31 @@ cap staging deploy:prepare
 
 ```
 cap staging deploy
+```
+
+7) Try the web UI by opening a browser window at `http://<ip_address>:4242`
+
+8) Read the web API documentation `public/weyland.conf` with Swagger Editor: https://editor.swagger.io/
+
+
+Installing the Software on a Mac OS X machine
+---------------------------------------------
+These steps will let you run the software on a Mac OS X machine.
+
+1) Install nginx
+
+```
+brew install nginx
+```
+
+2) Launch nginx (note this will not make it auto-launch at startup)
+
+```
+sudo nginx -c `pwd`/config/nginx.conf
+```
+
+3) Launch the print server
+
+```
+./bin/run_local.sh
 ```
