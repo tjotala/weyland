@@ -29,7 +29,7 @@ class AxiDrawServer < Sinatra::Base
 		set :root, Platform::ROOT_PATH
 		set :port, 8080
 		set :public_folder, Platform::PUBLIC_PATH
-		set :protection, :except => [:json_csrf]
+		set :protection, :except => [ :http_origin ]
 		enable :static
 		set :static_cache_control, [ :public, :max_age => 60 ]
 		#set :show_exceptions, true
