@@ -71,7 +71,7 @@ class Job
 	end
 
 	def print(converter, plotter)
-		if convert?
+		if (convert? || converted?)
 			convert(converter) unless File.exist?(print_name)
 			save(STATUS_PRINTING)
 			print_log = plotter.plot(print_name)
