@@ -41,7 +41,7 @@ class Jobs
 	end
 
 	def list
-		Dir[File.join(base_path, '*')].map { |path| Job::get(path) }.sort_by { |job| job.created }
+		Dir[File.join(base_path, '*')].map { |path| Job::get(path) rescue nil }.compact.sort_by { |job| job.created }
 	end
 
 	def get(id)
