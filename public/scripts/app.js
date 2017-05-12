@@ -1,8 +1,8 @@
 "use strict";
 
-var weylandApp = angular.module('weylandApp', [ 'angularMoment' ]);
+var weylandApp = angular.module('weylandApp', [ 'angularMoment', 'ui.bootstrap', 'bootstrap.fileField' ]);
 
-weylandApp.controller('weylandPrinterCtrl', function($scope, $http) {
+weylandApp.controller('weylandPrinterCtrl', function($scope, $http, $uibModal) {
   $scope.loading = false;
   $scope.printer_version = undefined;
 
@@ -32,7 +32,7 @@ weylandApp.controller('weylandPrinterCtrl', function($scope, $http) {
   $scope.get_version();
 });
 
-weylandApp.controller('weylandJobsCtrl', function($scope, $window, $http, $interval) {
+weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, $interval, $uibModal) {
   $scope.loading = false;
   $scope.jobs = [ ];
 
@@ -69,10 +69,50 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $window, $http, $inter
     });
   };
 
+  $scope.upload = function() {
+    $uibModal.open({
+      animation: true,
+      templateUrl: '/upload.html',
+      size: 'lg',
+      controller: 'weylandUploadCtrl'
+    }).result.then(r => {
+      var reader = new FileReader();
+      reader.readAsBinaryString(r.file);
+      reader.onloadend = function() {
+        $http.post('/v1/jobs', { name: r.name, svg: reader.result, convert: r.convert }).then(r => {
+          $scope.refresh();
+        });
+      }
+    });
+  };
+
   $scope.refresh();
   $interval(function() {
     $scope.refresh()
   }, 5000);
+});
+
+weylandApp.controller('weylandUploadCtrl', function($scope, $log, $uibModalInstance) {
+  $scope.name = undefined;
+  $scope.file = undefined;
+  $scope.convert = true;
+  $scope.preview = undefined;
+
+  $scope.updateName = function(newName) {
+    if (!angular.isDefined($scope.name)) {
+      // only update the name if the user didn't explicitly override it
+      // drop the .svg extension, if present
+      $scope.name = newName.replace('.svg', '');
+    }
+  };
+
+  $scope.ok = function() {
+    $uibModalInstance.close({ name: $scope.name, file: $scope.file, convert: $scope.convert });
+  };
+
+  $scope.cancel = function() {
+    $uibModalInstance.dismiss('cancel');
+  };
 });
 
 weylandApp.filter('bytes', function() {

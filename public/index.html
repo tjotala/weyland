@@ -7,8 +7,10 @@
 		<link rel="stylesheet" type="text/css" href="styles/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="styles/app.css">
 		<script src="scripts/angular.min.js"></script>
+		<script src="scripts/ui-bootstrap-tpls.min.js"></script>
 		<script src="scripts/moment.min.js"></script>
 		<script src="scripts/angular-moment.min.js"></script>
+		<script src="scripts/angular-bootstrap-file-field.min.js"></script>
 		<script src="scripts/app.js"></script>
 	</head>
 	<body ng-cloak>
@@ -68,6 +70,7 @@
 					<div>
 						<button type="button" class="btn btn-success" ng-click="refresh()"><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;Refresh</button>
 						<button type="button" class="btn btn-danger" ng-disabled="jobs.length == 0" ng-click="clear()"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete All</button>
+						<button type="button" class="btn btn-info" ng-click="upload()"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Upload&hellip;</button>
 					</div>
 				</div>
 			</div>
