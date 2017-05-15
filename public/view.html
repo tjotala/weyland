@@ -1,0 +1,10 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title">View Print Job: {{job.name}} ({{job.size | bytes}})</h3>
+</div>
+<div class="modal-body" id="modal-body">
+    <img ng-show="caniuse.svg()" ng-src="{{'/v1/jobs/' + job.id + '/content'}}" class="img-responsive center-block">
+    <p ng-hide="caniuse.svg()" class="text-warning">SVG preview not supported in this browser</p>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="$close()">OK</button>
+</div>

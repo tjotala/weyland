@@ -47,18 +47,25 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, 
     });
   };
 
-  $scope.view = function(job_id) {
-    $window.open('/v1/jobs/' + job_id + '/content', "popup", "width=600,height=400,left=100,top=100");
+  $scope.view = function(job) {
+    $uibModal.open({
+      animation: true,
+      templateUrl: '/view.html',
+      size: 'lg',
+      controller: function($scope) {
+        $scope.job = job;
+      }
+    }).result.then(angular.noop,angular.noop);
   };
 
-  $scope.delete = function(job_id) {
-    $http.delete('/v1/jobs/' + job_id).then(r => {
+  $scope.delete = function(job) {
+    $http.delete('/v1/jobs/' + job.id).then(r => {
       $scope.refresh();
     });
   };
 
-  $scope.print = function(job_id) {
-    $http.post('/v1/jobs/' + job_id + '/print').then(r => {
+  $scope.print = function(job) {
+    $http.post('/v1/jobs/' + job.id + '/print').then(r => {
       $scope.refresh();
     });
   };
@@ -74,7 +81,24 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, 
       animation: true,
       templateUrl: '/upload.html',
       size: 'lg',
-      controller: 'weylandUploadCtrl'
+      controller: function($scope) {
+        $scope.name = undefined;
+        $scope.file = undefined;
+        $scope.convert = true;
+        $scope.preview = undefined;
+
+        $scope.updateName = function(newName) {
+          if (!angular.isDefined($scope.name)) {
+            // only update the name if the user didn't explicitly override it
+            // drop the .svg extension, if present
+            $scope.name = newName.replace('.svg', '');
+          }
+        };
+
+        $scope.ok = function() {
+          $scope.$close({ name: $scope.name, file: $scope.file, convert: $scope.convert });
+        };
+      }
     }).result.then(r => {
       var reader = new FileReader();
       reader.readAsBinaryString(r.file);
@@ -83,36 +107,13 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, 
           $scope.refresh();
         });
       }
-    });
+    }, angular.noop);
   };
 
   $scope.refresh();
   $interval(function() {
     $scope.refresh()
   }, 5000);
-});
-
-weylandApp.controller('weylandUploadCtrl', function($scope, $log, $uibModalInstance) {
-  $scope.name = undefined;
-  $scope.file = undefined;
-  $scope.convert = true;
-  $scope.preview = undefined;
-
-  $scope.updateName = function(newName) {
-    if (!angular.isDefined($scope.name)) {
-      // only update the name if the user didn't explicitly override it
-      // drop the .svg extension, if present
-      $scope.name = newName.replace('.svg', '');
-    }
-  };
-
-  $scope.ok = function() {
-    $uibModalInstance.close({ name: $scope.name, file: $scope.file, convert: $scope.convert });
-  };
-
-  $scope.cancel = function() {
-    $uibModalInstance.dismiss('cancel');
-  };
 });
 
 weylandApp.filter('bytes', function() {

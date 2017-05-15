@@ -6,6 +6,7 @@
 		<link rel="stylesheet" type="text/css" href="styles/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="styles/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="styles/app.css">
+		<script src="scripts/caniuse.min.js"></script>
 		<script src="scripts/angular.min.js"></script>
 		<script src="scripts/ui-bootstrap-tpls.min.js"></script>
 		<script src="scripts/moment.min.js"></script>
@@ -47,9 +48,9 @@
 								<td class="text-center"><i class="fa fa-check" aria-hidden="true" ng-show="job.convert"></i></td>
 								<td am-time-ago="job.updated | amParse" title="{{job.updated}}"></td>
 								<td>
-									<button type="button" class="btn btn-primary" ng-disabled="!job.printable" ng-click="print(job.id)"><i class="fa fa-print" aria-hidden="true"></i>&nbsp;Print</button>
-									<button type="button" class="btn btn-info" ng-click="view(job.id)"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;View</button>
-									<button type="button" class="btn btn-warning" ng-click="delete(job.id)"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete</button>
+									<button type="button" class="btn btn-primary" ng-disabled="!job.printable" ng-click="print(job)"><i class="fa fa-print" aria-hidden="true"></i>&nbsp;Print</button>
+									<button type="button" class="btn btn-info" ng-click="view(job)"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;View</button>
+									<button type="button" class="btn btn-warning" ng-click="delete(job)"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete</button>
 								</td>
 							</tr>
 						</tbody>
