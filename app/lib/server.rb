@@ -248,10 +248,25 @@ class AxiDrawServer < Sinatra::Base
 	#
 	# @method GET
 	# @param id job ID
+	# @param download true = download as attachment, false (default) = inline
 	# @return 200 print job
 	#
-	get '/v1/jobs/:id/content' do
-		send_file(settings.jobs.get(params[:id]).content_name, :type => 'image/svg+xml', :disposition => 'inline')
+	get '/v1/jobs/:id/contents/:which' do
+		job = settings.jobs.get(params[:id])
+		path, type, name = *case params[:which]
+		when 'original'
+			[ job.original_content_name, 'image/svg+xml', "#{job.name}.svg" ]
+		when 'converted'
+			[ job.converted_content_name, 'image/svg+xml', "#{job.name}.svg" ]
+		when 'conversion_log'
+			[ job.conversion_log_name, 'text/plain', "#{job.name}.log" ]
+		when 'print_log'
+			[ job.print_log_name, 'text/plain', "#{job.name}.log" ]
+		else
+			not_found
+		end
+		download = params[:download] == 'true'
+		send_file(path, :type => type, :disposition => download ? 'attachment' : 'inline', :filename => download ? name : nil)
 	end
 
 	##

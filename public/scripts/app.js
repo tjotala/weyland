@@ -2,7 +2,7 @@
 
 var weylandApp = angular.module('weylandApp', [ 'angularMoment', 'ui.bootstrap', 'bootstrap.fileField' ]);
 
-weylandApp.controller('weylandPrinterCtrl', function($scope, $http, $uibModal) {
+weylandApp.controller('weylandPrinterCtrl', function($scope, $http) {
   $scope.loading = false;
   $scope.printer_version = undefined;
 
@@ -54,6 +54,7 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, 
       size: 'lg',
       controller: function($scope) {
         $scope.job = job;
+        $scope.content = 'original';
       }
     }).result.then(angular.noop,angular.noop);
   };
@@ -124,4 +125,24 @@ weylandApp.filter('bytes', function() {
       number = Math.floor(Math.log(bytes) / Math.log(1024));
     return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
   }
+});
+
+weylandApp.directive('mycontent', function($http, $sce) {
+  return {
+    restrict: 'E',
+    templateUrl: 'content.html',
+    link: function(scope, element, attrs) {
+      scope.$watchGroup([ 'job', 'content' ], function(newValues) {
+        var job = newValues[0];
+        var content = newValues[1];
+        $http.get('/v1/jobs/' + job.id + '/contents/' + content).then(r => {
+          // NOTE: This explicitly asserts that the content is safe. There be dragons...
+          scope.content_body = $sce.trustAsHtml(r.data);
+        }, err => {
+          // got no content; the template will handle it
+          scope.content_body = undefined;
+        });
+      });
+    }
+  };
 });

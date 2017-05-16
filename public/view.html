@@ -2,8 +2,18 @@
     <h3 class="modal-title" id="modal-title">View Print Job: {{job.name}} ({{job.size | bytes}})</h3>
 </div>
 <div class="modal-body" id="modal-body">
-    <img ng-show="caniuse.svg()" ng-src="{{'/v1/jobs/' + job.id + '/content'}}" class="img-responsive center-block">
-    <p ng-hide="caniuse.svg()" class="text-warning">SVG preview not supported in this browser</p>
+    <div class="btn-group">
+        <label class="btn btn-primary" ng-class="{ 'btn-success': content == 'original' }" ng-model="content" uib-btn-radio="'original'">Original File</label>
+        <label class="btn btn-primary" ng-class="{ 'btn-success': content == 'converted' }" ng-model="content" uib-btn-radio="'converted'">Converted File</label>
+        <label class="btn btn-primary" ng-class="{ 'btn-success': content == 'conversion_log' }" ng-model="content" uib-btn-radio="'conversion_log'">Conversion Log</label>
+        <label class="btn btn-primary" ng-class="{ 'btn-success': content == 'print_log' }" ng-model="content" uib-btn-radio="'print_log'">Print Log</label>
+    </div>
+    <div class="btn-group">
+        <a role="button" class="btn btn-success" href="{{'/v1/jobs/' + job.id + '/contents/' + content + '?download=true'}}"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;Download</a>
+    </div>
+    <div>
+        <mycontent job="job" content="content"></mycontent>
+    </div>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="$close()">OK</button>

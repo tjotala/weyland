@@ -24,7 +24,7 @@ describe Job do
 			expect( job ).not_to be_convert
 			expect( job ).to be_printable
 			expect( Job::job_name(path) ).to be_readable_file
-			expect( job.content_name ).to be_readable_file
+			expect( job.original_content_name ).to be_readable_file
 		end
 
 		it 'should accept conversion override' do
@@ -42,7 +42,7 @@ describe Job do
 			expect( job ).to be_convert
 			expect( job ).to be_printable
 			expect( Job::job_name(path) ).to be_readable_file
-			expect( job.content_name ).to be_readable_file
+			expect( job.original_content_name ).to be_readable_file
 		end
 	end
 
@@ -99,7 +99,7 @@ describe Job do
 			job = Job::create(path, id, content, name, false)
 			# mock the converter because this test is not for actual conversion
 			converter = double('Converter')
-			expect( converter ).to receive(:convert).with(job.content_name, job.print_name).and_return('success!')
+			expect( converter ).to receive(:convert).with(job.original_content_name, job.converted_content_name).and_return('success!')
 			expect{ job.convert(converter) }.to change(job, :updated).and change(job, :status)
 		end
 	end
@@ -109,7 +109,7 @@ describe Job do
 			job = Job::create(path, id, content, name, false)
 			# mock the plotter since we don't want to have a hardware dependency
 			plotter = double('Plotter')
-			expect( plotter ).to receive(:plot).with(job.content_name)
+			expect( plotter ).to receive(:plot).with(job.original_content_name)
 			expect( plotter ).to receive(:home)
 			expect( plotter ).to receive(:pen).with(:up)
 			expect{ job.print(nil, plotter) }.to change(job, :updated).and change(job, :status)

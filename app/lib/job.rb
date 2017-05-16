@@ -61,7 +61,7 @@ class Job
 
 	def convert(converter)
 		save(STATUS_CONVERTING)
-		conversion_log = converter.convert(content_name, print_name)
+		conversion_log = converter.convert(original_content_name, converted_content_name)
 		File.write(conversion_log_name, conversion_log)
 		conflicted_resource('conversion failed') if conversion_log =~ /error/m
 		save(STATUS_CONVERTED)
@@ -72,12 +72,12 @@ class Job
 
 	def print(converter, plotter)
 		if (convert? || converted?)
-			convert(converter) unless File.exist?(print_name)
+			convert(converter) unless File.exist?(converted_content_name)
 			save(STATUS_PRINTING)
-			print_log = plotter.plot(print_name)
+			print_log = plotter.plot(converted_content_name)
 		else
 			save(STATUS_PRINTING)
-			print_log = plotter.plot(content_name)
+			print_log = plotter.plot(original_content_name)
 		end
 		File.write(print_log_name, print_log) unless print_log.nil?
 		save(STATUS_PRINTED)
@@ -126,12 +126,20 @@ class Job
 		basic.select { |k, v| v }.to_json(args)
 	end
 
-	def content_name
+	def original_content_name
 		File.join(@path, 'content.svg')
 	end
 
-	def print_name
+	def converted_content_name
 		File.join(@path, 'print.svg')
+	end
+
+	def conversion_log_name
+		File.join(@path, 'conversion.log')
+	end
+
+	def print_log_name
+		File.join(@path, 'print.log')
 	end
 
 	def save(new_status = nil)
@@ -142,14 +150,6 @@ class Job
 	end
 
 	private
-
-	def conversion_log_name
-		File.join(@path, 'conversion.log')
-	end
-
-	def print_log_name
-		File.join(@path, 'print.log')
-	end
 
 	def initialize(obj = { })
 		@path = obj[:path]
@@ -170,7 +170,7 @@ class Job
 		def create(path, id, content, name, convert)
 			FileUtils.mkdir(path)
 			job = Job.new(path: path, id: id, name: name, size: content.bytesize, convert: convert).save
-			File.write(job.content_name, content)
+			File.write(job.original_content_name, content)
 			job
 		rescue Errno::EACCES => e
 			forbidden

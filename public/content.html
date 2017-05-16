@@ -1,0 +1,3 @@
+<div ng-if="!content_body" class="bg-danger">No {{content}}</div>
+<div ng-if="content_body && (content == 'original' || content == 'converted')" type="image/svg+xml" class="img-responsive center-block" alt="{{job.name}}" ng-bind-html="content_body"></div>
+<pre ng-if="content_body && (content == 'conversion_log' || content == 'print_log')">{{content_body}}</pre>

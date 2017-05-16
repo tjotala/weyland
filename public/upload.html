@@ -25,8 +25,7 @@
         <div ng-show="preview" class="panel panel-default text-center">
             <div class="panel-heading">Preview: {{file.name}} ({{file.size | bytes}})</div>
             <div class="panel-body">
-                <img ng-show="caniuse.svg()" ng-src="{{preview}}" class="img-responsive center-block">
-                <p ng-hide="caniuse.svg()" class="text-warning">SVG preview not supported in this browser</p>
+                <img ng-src="{{preview}}" class="img-responsive center-block">
             </div>
         </div>
     </div>

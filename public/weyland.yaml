@@ -12,7 +12,7 @@ info:
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 
 schemes:
-- "http"
+  - "http"
 
 parameters:
   job_id:
@@ -33,8 +33,26 @@ parameters:
     default: false
     example: true
 
+  content_id:
+    name: content_id
+    description: >
+      Identifies the type of content requested.
+      * `original` is the original uploaded print job file
+      * `converted` is the print job file after converting text-to-path
+      * `conversion_log` is the log file generated during conversion
+      * `print_log` is the log file generated during printing
+    in: path
+    required: true
+    type: string
+    enum:
+      - original
+      - converted
+      - conversion_log
+      - print_log
+    example: "original"
+
   download:
-    description: "Controls what is returned as the Content-Disposition header value. If true, returns `attachment`. If false, returns `inline`. Default is false."
+    description: "Controls what is returned as the Content-Disposition header value. If true, returns `attachment` with a filename. If false, returns `inline`. Default is false."
     name: download
     in: query
     type: boolean
@@ -50,7 +68,7 @@ parameters:
     schema:
       type: object
       required:
-      - svg
+        - svg
       properties:
         name:
           description: "Print job name. Default is empty string."
@@ -75,12 +93,12 @@ definitions:
     title: Server configuration
     type: object
     required:
-    - product
-    - platform
-    - environment
-    - time
-    - total_space
-    - available_space
+      - product
+      - platform
+      - environment
+      - time
+      - total_space
+      - available_space
     properties:
       product:
         description: "Product name"
@@ -119,7 +137,7 @@ definitions:
         type: string
         example: "Firmware Version 2.5.1"
     required:
-    - version
+      - version
 
   print_job:
     title: Print job
@@ -141,11 +159,12 @@ definitions:
         description: "Print job status"
         type: string
         enum:
-        - pending
-        - converting
-        - printing
-        - printed
-        - failed
+          - pending
+          - converting
+          - converted
+          - printing
+          - printed
+          - failed
         example: "printed"
       created:
         description: "Date/time when print job was first created"
@@ -158,13 +177,13 @@ definitions:
         format: dateTime
         example: "2017-05-07T07:00:14Z"
     required:
-    - id
-    - name
-    - size
-    - status
-    - created
-    - updated
-    
+      - id
+      - name
+      - size
+      - status
+      - created
+      - updated
+
   print_jobs:
     title: Print jobs
     type: array
@@ -172,21 +191,21 @@ definitions:
       $ref: "#/definitions/print_job"
 
 tags:
-- name: System
-  description: System APIs
-- name: Printer
-  description: Printer APIs
-- name: Jobs
-  description: Print Job APIs
-  
+  - name: System
+    description: System APIs
+  - name: Printer
+    description: Printer APIs
+  - name: Jobs
+    description: Print Job APIs
+
 paths:
   /v1/config:
     get:
       summary: "Returns system configuration information"
       tags:
-      - System
+        - System
       produces:
-      - "application/json"
+        - "application/json"
       responses:
         200:
           description: "OK"
@@ -197,9 +216,9 @@ paths:
     get:
       summary: "Health check"
       tags:
-      - System
+        - System
       produces:
-      - "text/plain"
+        - "text/plain"
       responses:
         200:
           description: "OK"
@@ -211,7 +230,7 @@ paths:
     get:
       summary: "Shutdown server"
       tags:
-      - System
+        - System
       responses:
         204:
           description: "OK"
@@ -220,7 +239,7 @@ paths:
     get:
       summary: "Shutdown appliance"
       tags:
-      - System
+        - System
       responses:
         204:
           description: "OK"
@@ -230,9 +249,9 @@ paths:
       summary: "Returns printer firmware version"
       description: "This API can be used to test connectivity to the printer."
       tags:
-      - Printer
+        - Printer
       produces:
-      - "application/json"
+        - "application/json"
       responses:
         200:
           description: "OK"
@@ -245,7 +264,7 @@ paths:
     post:
       summary: "Moves printer pen up"
       tags:
-      - Printer
+        - Printer
       responses:
         204:
           description: "No Content"
@@ -256,7 +275,7 @@ paths:
     post:
       summary: "Moves printer pen down"
       tags:
-      - Printer
+        - Printer
       responses:
         204:
           description: "No Content"
@@ -267,9 +286,9 @@ paths:
     get:
       summary: "List print jobs"
       tags:
-      - Jobs
+        - Jobs
       produces:
-      - "application/json"
+        - "application/json"
       responses:
         200:
           description: "OK"
@@ -280,11 +299,11 @@ paths:
       summary: "Create New Print Job"
       description: "Creates a new print job. The job is placed in a background queue for conversions, if conversion was requested. Either way, it will not be sent to the printer until the Print API is called."
       tags:
-      - Jobs
+        - Jobs
       parameters:
-      - $ref: "#/parameters/new_print_job"
+        - $ref: "#/parameters/new_print_job"
       produces:
-      - "application/json"
+        - "application/json"
       responses:
         200:
           description: "OK"
@@ -294,20 +313,21 @@ paths:
     delete:
       summary: "Delete All Print Jobs"
       tags:
-      - Jobs
+        - Jobs
       responses:
         204:
           description: "OK"
 
   /v1/jobs/{job_id}:
+    parameters:
+      - $ref: "#/parameters/job_id"
+
     get:
       summary: "Get Print Job Information"
       tags:
-      - Jobs
-      parameters:
-      - $ref: "#/parameters/job_id"
+        - Jobs
       produces:
-      - "application/json"
+        - "application/json"
       responses:
         200:
           description: "OK"
@@ -317,23 +337,23 @@ paths:
     delete:
       summary: "Delete Print Job"
       tags:
-      - Jobs
-      parameters:
-      - $ref: "#/parameters/job_id"
+        - Jobs
       responses:
         204:
           description: "OK"
 
-  /v1/jobs/{job_id}/content:
+  /v1/jobs/{job_id}/contents/{content_id}:
     get:
       summary: "Get Print Job Content"
       tags:
-      - Jobs
+        - Jobs
       parameters:
-      - $ref: "#/parameters/job_id"
-      - $ref: "#/parameters/download"
+        - $ref: "#/parameters/job_id"
+        - $ref: "#/parameters/content_id"
+        - $ref: "#/parameters/download"
       produces:
-      - "image/svg+xml"
+        - "image/svg+xml"
+        - "text/plain"
       responses:
         200:
           description: "OK"
@@ -350,12 +370,12 @@ paths:
       summary: "Print a Job"
       description: "Puts the print job in a background queue for printing. If conversion was requested and the job had not been converted yet, it will be converted first."
       tags:
-      - Jobs
+        - Jobs
       parameters:
-      - $ref: "#/parameters/job_id"
-      - $ref: "#/parameters/convert"
+        - $ref: "#/parameters/job_id"
+        - $ref: "#/parameters/convert"
       produces:
-      - "application/json"
+        - "application/json"
       responses:
         200:
           description: "OK"
