@@ -73,7 +73,7 @@ namespace :deploy do
 		task :inkscape do
 			on roles(:all) do |host|
 				sudo "curl", "--silent --location --output /var/cache/apt/archives/inkscape_0.92.1-1_armhf.deb http://snapshot.debian.org/archive/debian/20170216T152027Z/pool/main/i/inkscape/inkscape_0.92.1-1_armhf.deb"
-				sudo "apt-get", "-y install inkscape"
+				sudo "apt-get", "-y install inkscape" # install from /var/cache/...
 				sudo "apt-get", "-y install python-lxml"
 			end
 		end
@@ -87,7 +87,7 @@ namespace :deploy do
 				ext_folder = "/home/#{fetch(:user)}/.config/inkscape/extensions"
 				execute "curl", "--silent --location --output #{temp_folder}/#{filename} https://github.com/evil-mad/axidraw/releases/download/#{version}/#{filename}"
 				execute "mkdir", "-p #{ext_folder}"
-				execute "unzip", "#{temp_folder}/#{filename} -d #{ext_folder}"
+				execute "unzip", "#{temp_folder}/#{filename} -o -d #{ext_folder}"
 				execute "rm", "#{temp_folder}/#{filename}"
 			end
 		end
