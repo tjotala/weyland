@@ -7,6 +7,7 @@ gem 'sinatra-json'
 gem 'sinatra-swagger'
 gem 'rack'
 gem 'tilt', '~> 1.4.1'
+gem 'haml'
 gem 'promise'
 
 # deployment tools

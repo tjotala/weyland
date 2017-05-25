@@ -4,6 +4,7 @@ require 'sinatra/base'
 require 'sinatra/json'
 #require 'sinatra/swagger'
 require 'logger'
+require 'haml'
 require 'json'
 
 require 'errors'
@@ -125,7 +126,8 @@ class AxiDrawServer < Sinatra::Base
 	#
 	get '/' do
 		cache_control :public, :max_age => 60
-		send_file(File.join(settings.public_folder, 'index.html'), :type => :html, :disposition => 'inline')
+		content_type :html
+		haml :index
 	end
 
 	##

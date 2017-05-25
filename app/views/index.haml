@@ -1,0 +1,90 @@
+!!!
+%html{lang: 'en', 'ng:app': 'weylandApp'}
+	%head
+		%meta{name: 'viewport', content: 'width=device-width, initial-scale=1'}
+		%title= "#{Platform::COMPANY_NAME} #{Platform::PRODUCT_NAME}"
+		%link{rel: 'stylesheet', href: 'styles/bootstrap.min.css'}
+		%link{rel: 'stylesheet', href: 'styles/font-awesome.min.css'}
+		%link{rel: 'stylesheet', href: 'styles/app.css'}
+		%script{src: 'scripts/angular.min.js'}
+		%script{src: 'scripts/ui-bootstrap-tpls.min.js'}
+		%script{src: 'scripts/moment.min.js'}
+		%script{src: 'scripts/angular-moment.min.js'}
+		%script{src: 'scripts/angular-bootstrap-file-field.min.js'}
+		%script{src: 'scripts/app.js'}
+	%body{'ng:cloak': nil}
+		%div.container
+			%div.page-header
+				%h1= "#{Platform::COMPANY_NAME} #{Platform::PRODUCT_NAME}"
+				- if Platform::PRODUCT_LOGO
+					%img.logo{src: Platform::PRODUCT_LOGO}
+			%div.panel.panel-default{'ng:controller': 'weylandJobsCtrl'}
+				%div.panel-heading
+					%h3 Print Jobs
+				%div.panel-body
+					%table.table.table-striped
+						%thead
+							%tr
+								%th ID
+								%th Name
+								%th Created
+								%th Size
+								%th Status
+								%th Convert?
+								%th Updated
+								%th Actions
+						%tbody
+							%tr{'ng:repeat': 'job in jobs track by job.id'}
+								%td {{job.id}}
+								%td {{job.name}}
+								%td{'am-time-ago': 'job.created | amParse', title: '{{job.created}}'}
+								%td.text-right{title: '{{job.size | number}} bytes'} {{job.size | bytes}}
+								%td
+									{{job.status}}
+									%span{'ng:show': 'job.print_stats'} ({{job.print_stats.elapsed}})
+								%td.text-center
+									%i.fa.fa-check{'ng:show': 'job.convert'}
+								%td{'am-time-ago': 'job.updated | amParse', title: '{{job.updated}}'}
+								%td
+									%button.btn.btn-primary{type: 'button', 'ng:disabled': '!job.printable', 'ng:click': 'print(job)'}
+										%i.fa.fa-print
+										Print
+									%button.btn.btn-info{type: 'button', 'ng:click': 'view(job)'}
+										%i.fa.fa-search
+										View
+									%button.btn.btn-warning{type: 'button', 'ng:click': 'delete(job)'}
+										%i.fa.fa-trash
+										Delete
+						%tfoot
+							%tr
+								%td.text-center{colspan: '8'}
+									%ng:pluralize{count: 'jobs.length',
+										when: "{ '0': '0 jobs', 'one': '1 job', 'other': '{} jobs' }"}
+					%div
+						%button.btn.btn-success{type: 'button', 'ng:click': 'refresh()'}
+							%i.fa.fa-refresh
+							Refresh
+						%button.btn.btn-danger{type: 'button', 'ng:disabled': 'jobs.length == 0', 'ng:click': 'clear()'}
+							%i.fa.fa-trash
+							Delete All
+						%button.btn.btn-info{type: 'button', 'ng:click': 'upload()'}
+							%i.fa.fa-upload
+							Upload&hellip;
+			%div.panel.panel-default{'ng:controller': 'weylandPrinterCtrl'}
+				%div.panel-heading
+					Plotter Version:
+					%span{'ng:show': 'loading'}
+						Fetching...
+						%i.fa.fa-spinner.fa-spin
+					%span{'ng:hide': 'loading'}
+						{{printer_version || 'unknown'}}
+						%i.fa.fa-refresh{role: 'button', 'ng:click': 'get_version()'}
+				%div.panel-body
+					%button.btn.btn-primary{type: 'button', 'ng:click': 'pen_up()'}
+						%i.fa.fa-pencil
+						%i.fa.fa-arrow-up
+						Pen Up
+					%button.btn.btn-primary{type: 'button', 'ng:click': 'pen_down()'}
+						%i.fa.fa-pencil
+						%i.fa.fa-arrow-down
+						Pen Down
