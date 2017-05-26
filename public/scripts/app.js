@@ -50,13 +50,36 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, 
   $scope.view = function(job) {
     $uibModal.open({
       animation: true,
-      templateUrl: '/view.html',
+      templateUrl: '/view',
       size: 'lg',
-      controller: function($scope) {
+      controller: [ '$scope', 'uibButtonConfig', function($scope, buttonConfig) {
+        buttonConfig.activeClass = 'btn-success';
         $scope.job = job;
-        $scope.content = 'original';
-      }
-    }).result.then(angular.noop,angular.noop);
+        $scope.content_original = 'original';
+        $scope.content_converted = 'converted';
+        $scope.content_conversion_log = 'conversion_log';
+        $scope.content_print_log = 'print_log';
+        $scope.content_id = $scope.content_converted;
+        $scope.have_content = function() {
+          return $scope.content_body != undefined;
+        };
+        $scope.content_name = function(content_id) {
+          switch (content_id) {
+            case $scope.content_original: return 'Original File';
+            case $scope.content_converted: return 'Converted File';
+            case $scope.content_conversion_log: return 'Conversion Log';
+            case $scope.content_print_log: return 'Print Log';
+          }
+          return 'Unknown Content Type';
+        };
+        $scope.is_image = function() {
+          return $scope.content_id == $scope.content_original || $scope.content_id == $scope.content_converted;
+        };
+        $scope.download_link = function() {
+          return '/v1/jobs/' + job.id + '/contents/' + $scope.content_id + '?download=true';
+        };
+      } ],
+    }).result.then(angular.noop, angular.noop);
   };
 
   $scope.delete = function(job) {
@@ -80,7 +103,7 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, 
   $scope.upload = function() {
     $uibModal.open({
       animation: true,
-      templateUrl: '/upload.html',
+      templateUrl: '/upload',
       size: 'lg',
       controller: function($scope) {
         $scope.name = undefined;
@@ -88,11 +111,11 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, 
         $scope.convert = true;
         $scope.preview = undefined;
 
-        $scope.updateName = function(newName) {
+        $scope.updateName = function() {
           if (!angular.isDefined($scope.name)) {
             // only update the name if the user didn't explicitly override it
             // drop the .svg extension, if present
-            $scope.name = newName.replace('.svg', '');
+            $scope.name = $scope.file.name.replace('.svg', '');
           }
         };
 
@@ -130,12 +153,12 @@ weylandApp.filter('bytes', function() {
 weylandApp.directive('mycontent', function($http, $sce) {
   return {
     restrict: 'E',
-    templateUrl: 'content.html',
+    templateUrl: '/content',
     link: function(scope, element, attrs) {
-      scope.$watchGroup([ 'job', 'content' ], function(newValues) {
+      scope.$watchGroup([ 'job', 'content_id' ], function(newValues) {
         var job = newValues[0];
-        var content = newValues[1];
-        $http.get('/v1/jobs/' + job.id + '/contents/' + content).then(r => {
+        var content_id = newValues[1];
+        $http.get('/v1/jobs/' + job.id + '/contents/' + content_id).then(r => {
           // NOTE: This explicitly asserts that the content is safe. There be dragons...
           scope.content_body = $sce.trustAsHtml(r.data);
         }, err => {

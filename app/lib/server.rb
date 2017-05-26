@@ -119,15 +119,18 @@ class AxiDrawServer < Sinatra::Base
 	#################################################################
 
 	##
-	# Get Home Page
+	# Get Views
 	#
 	# @method GET
-	# @return 200 configuration items
+	# @return 200
 	#
-	get '/' do
-		cache_control :public, :max_age => 60
-		content_type :html
-		haml :index
+	[ '/', '/:page_id' ].each do |url|
+		get url do
+			page_id = params[:page_id] || 'index'
+			400 unless page_id =~ /\w+/
+			content_type :html
+			haml page_id.to_sym
+		end
 	end
 
 	##

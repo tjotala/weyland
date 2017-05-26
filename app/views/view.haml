@@ -1,0 +1,18 @@
+%div.modal-header
+    %button.close{type: 'button', 'ng-click': "$dismiss('cancel')"}
+        %i.fa.fa-close
+    %h3.modal-title#modal-title View Print Job: {{job.name}} ({{job.size | bytes}})
+%div.modal-body#modal-body
+    %div.btn-group
+        -# %label.btn.btn-primary{'ng-model': 'content_id', 'uib-btn-radio': 'content_original'} {{content_name(content_original)}}
+        %label.btn.btn-primary{'ng-model': 'content_id', 'uib-btn-radio': 'content_converted'} {{content_name(content_converted)}}
+        %label.btn.btn-primary{'ng-model': 'content_id', 'uib-btn-radio': 'content_conversion_log'} {{content_name(content_conversion_log)}}
+        %label.btn.btn-primary{'ng-model': 'content_id', 'uib-btn-radio': 'content_print_log'} {{content_name(content_print_log)}}
+    %div.btn-group
+        %a.btn.btn-success{role: 'button', href: '{{download_link()}}'}
+            %i.fa.fa-download
+            Download
+    %div
+        %mycontent{job: 'job', content_id: 'content_id'}
+%div.modal-footer
+    %button.btn.btn-primary{type: 'button', 'ng-click': "$dismiss('cancel')"} Close
