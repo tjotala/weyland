@@ -127,9 +127,13 @@ class AxiDrawServer < Sinatra::Base
 	[ '/', '/:page_id' ].each do |url|
 		get url do
 			page_id = params[:page_id] || 'index'
-			400 unless page_id =~ /\w+/
+			not_found unless page_id =~ /\w+/
 			content_type :html
-			haml page_id.to_sym
+			begin
+				haml page_id.to_sym
+			rescue Errno::ENOENT => e
+				not_found
+			end
 		end
 	end
 

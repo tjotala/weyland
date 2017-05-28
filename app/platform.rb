@@ -11,7 +11,7 @@ module Platform
 
 	COMPANY_NAME = (PRODUCT_CONFIG['company_name'] || '').freeze
 	PRODUCT_NAME = (PRODUCT_CONFIG['product_name'] || 'Weyland').freeze
-	PRODUCT_VERSION = (PRODUCT_CONFIG['product_version'] || '1.0').freeze
+	PRODUCT_VERSION = (PRODUCT_CONFIG['product_version'] || '1.0').to_s.freeze
 	PRODUCT_LOGO = (PRODUCT_CONFIG['product_logo'] || nil).freeze
 	PRODUCT_FULLNAME = "#{PRODUCT_NAME}/#{PRODUCT_VERSION}".freeze
 
