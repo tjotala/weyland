@@ -55,6 +55,9 @@
 									%button.btn.btn-warning{type: 'button', 'ng-click': 'delete(job)'}
 										%i.fa.fa-trash
 										Delete
+									%button.btn.btn-success{type: 'button', 'ng-disabled': '!job.mailable', 'ng-click': 'mail(job)'}
+										%i.fa.fa-envelope
+										Mailed
 						%tfoot
 					%div
 						%button.btn.btn-success{type: 'button', 'ng-click': 'refresh()'}

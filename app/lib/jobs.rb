@@ -63,6 +63,14 @@ class Jobs
 		job
 	end
 
+	def mail(id)
+		job = get(id)
+		conflicted_resource('failed to print') unless job.failed?
+		conflicted_resource('not yet printed') unless job.printed?
+		conflicted_resource('already mailed') if job.mailed?
+		job.mail
+	end
+
 	def purge(id)
 		get(id).purge
 	end

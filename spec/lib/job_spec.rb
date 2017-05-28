@@ -23,6 +23,7 @@ describe Job do
 			expect( job ).not_to be_failed
 			expect( job ).not_to be_convert
 			expect( job ).to be_printable
+			expect( job ).not_to be_mailable
 			expect( Job::job_name(path) ).to be_readable_file
 			expect( job.original_content_name ).to be_readable_file
 		end
@@ -41,6 +42,7 @@ describe Job do
 			expect( job ).not_to be_failed
 			expect( job ).to be_convert
 			expect( job ).to be_printable
+			expect( job ).not_to be_mailable
 			expect( Job::job_name(path) ).to be_readable_file
 			expect( job.original_content_name ).to be_readable_file
 		end
@@ -101,6 +103,7 @@ describe Job do
 			converter = double('Converter')
 			expect( converter ).to receive(:convert).with(job.original_content_name, job.converted_content_name).and_return('success!')
 			expect{ job.convert(converter) }.to change(job, :updated).and change(job, :status)
+			expect( job.status ).to be == Job::STATUS_CONVERTED
 		end
 	end
 
@@ -113,6 +116,15 @@ describe Job do
 			expect( plotter ).to receive(:home)
 			expect( plotter ).to receive(:pen).with(:up)
 			expect{ job.print(nil, plotter) }.to change(job, :updated).and change(job, :status)
+			expect( job.status ).to be == Job::STATUS_PRINTED
+		end
+	end
+
+	describe :mail do
+		it 'should mark job as mailed' do
+			job = Job::create(path, id, content, name, false)
+			expect{ job.mail }.to change(job, :updated).and change(job, :status)
+			expect( job.status ).to be == Job::STATUS_MAILED
 		end
 	end
 end

@@ -302,10 +302,25 @@ class AxiDrawServer < Sinatra::Base
 	# @return 200 OK
 	# @return 404 bad print job ID
 	# @return 409 already printing
-	# @return 
 	#
 	post '/v1/jobs/:id/print' do
 		json settings.jobs.print(params[:id], params[:convert].nil? ? nil : params[:convert] == 'true')
+		status 200
+	end
+
+	##
+	# Mark a Print Job as Mailed
+	#
+	# @method POST
+	# @param id job ID
+	# @return 200 OK
+	# @return 404 bad print job ID
+	# @return 409 failed to print
+	# @return 409 not printed
+	# @return 409 already mailed
+	#
+	post '/v1/jobs/:id/mail' do
+		json settings.jobs.mail(params[:id])
 		status 200
 	end
 

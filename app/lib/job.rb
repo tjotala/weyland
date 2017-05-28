@@ -47,12 +47,20 @@ class Job
 		@status == STATUS_FAILED
 	end
 
+	def mailed?
+		@status == STATUS_MAILED
+	end
+
 	def deleted?
 		@status == STATUS_DELETED
 	end
 
 	def printable?
 		!(converting? || printing? || deleted?)
+	end
+
+	def mailable?
+		printed? && !mailed?
 	end
 
 	def convert=(state)
@@ -91,6 +99,10 @@ class Job
 		false
 	end
 
+	def mail
+		save(STATUS_MAILED)
+	end
+
 	def purge
 		FileUtils.rm_rf(@path)
 		@status = STATUS_DELETED # not persisted though
@@ -111,6 +123,7 @@ class Job
 			status: @status,
 			convert: @convert,
 			printable: printable?,
+			mailable: mailable?,
 		}
 		print_log = File.read(print_log_name) rescue nil
 		if print_log

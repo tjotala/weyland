@@ -385,3 +385,25 @@ paths:
           description: "print job is already printing"
         429:
           description: "another print job is already printing"
+
+  /v1/jobs/{job_id}/mail:
+    post:
+      summary: "Mark a Print Job as Mailed"
+      description: "Marks the print job as having been mailed."
+      tags:
+        - Jobs
+      parameters:
+        - $ref: "#/parameters/job_id"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/print_job"
+        409:
+          description: "print job failed to print"
+        409:
+          description: "job has not yet been printed"
+        409:
+          description: "print job was already mailed"
