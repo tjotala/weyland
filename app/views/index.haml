@@ -25,25 +25,25 @@
 					%table.table.table-striped
 						%thead
 							%tr
-								%th ID
+								%th #
 								%th Name
 								%th Created
 								%th Size
-								%th Status
 								%th Convert?
+								%th Status
 								%th Updated
 								%th Actions
 						%tbody
 							%tr{'ng-repeat': 'job in jobs track by job.id'}
-								%td {{job.id}}
+								%td{title: '{{job.id}}'} {{$index + 1}}
 								%td {{job.name}}
 								%td{'am-time-ago': 'job.created | amParse', title: '{{job.created}}'}
 								%td.text-right{title: '{{job.size | number}} bytes'} {{job.size | bytes}}
+								%td.text-center
+									%i.fa.fa-check{'ng-show': 'job.convert'}
 								%td
 									{{job.status}}
 									%span{'ng-show': 'job.print_stats'} ({{job.print_stats.elapsed}})
-								%td.text-center
-									%i.fa.fa-check{'ng-show': 'job.convert'}
 								%td{'am-time-ago': 'job.updated | amParse', title: '{{job.updated}}'}
 								%td
 									%button.btn.btn-info{type: 'button', 'ng-click': 'view(job)', title: 'View the files'}
