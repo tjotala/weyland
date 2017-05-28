@@ -46,44 +46,44 @@
 									%i.fa.fa-check{'ng-show': 'job.convert'}
 								%td{'am-time-ago': 'job.updated | amParse', title: '{{job.updated}}'}
 								%td
-									%button.btn.btn-primary{type: 'button', 'ng-disabled': '!job.printable', 'ng-click': 'print(job)'}
-										%i.fa.fa-print
-										Print
-									%button.btn.btn-info{type: 'button', 'ng-click': 'view(job)'}
+									%button.btn.btn-info{type: 'button', 'ng-click': 'view(job)', title: 'View the files'}
 										%i.fa.fa-search
 										View
-									%button.btn.btn-warning{type: 'button', 'ng-click': 'delete(job)'}
+									%button.btn.btn-primary{type: 'button', 'ng-disabled': '!job.printable', 'ng-click': 'print(job)', title: 'Print the file'}
+										%i.fa.fa-print
+										Print
+									%button.btn.btn-success{type: 'button', 'ng-disabled': '!job.mailable', 'ng-click': 'mail(job)', title: 'Mark the print job as mailed'}
+										%i.fa.fa-envelope
+										Mail
+									%button.btn.btn-danger{type: 'button', 'ng-click': 'delete(job)', title: 'Delete the print job'}
 										%i.fa.fa-trash
 										Delete
-									%button.btn.btn-success{type: 'button', 'ng-disabled': '!job.mailable', 'ng-click': 'mail(job)'}
-										%i.fa.fa-envelope
-										Mailed
 						%tfoot
 					%div
-						%button.btn.btn-success{type: 'button', 'ng-click': 'refresh()'}
+						%button.btn.btn-primary{type: 'button', 'ng-click': 'refresh()', title: 'Refresh print job list'}
 							%i.fa.fa-refresh
 							Refresh
-						%button.btn.btn-danger{type: 'button', 'ng-disabled': 'jobs.length == 0', 'ng-click': 'clear()'}
-							%i.fa.fa-trash
-							Delete All
-						%button.btn.btn-info{type: 'button', 'ng-click': 'upload()'}
+						%button.btn.btn-success{type: 'button', 'ng-click': 'upload()', title: 'Upload new print job'}
 							%i.fa.fa-upload
 							Upload&hellip;
+						%button.btn.btn-danger{type: 'button', 'ng-disabled': 'jobs.length == 0', 'ng-click': 'clear()', title: 'Delete all print jobs'}
+							%i.fa.fa-trash
+							Delete All
 			%div.panel.panel-default{'ng-controller': 'weylandPrinterCtrl'}
 				%div.panel-heading
 					Plotter Version:
 					%span{'ng-show': 'loading'}
-						Fetching...
+						fetching...
 						%i.fa.fa-spinner.fa-spin
 					%span{'ng-hide': 'loading'}
 						{{printer_version || 'unknown'}}
 						%i.fa.fa-refresh{role: 'button', 'ng-click': 'get_version()'}
 				%div.panel-body
-					%button.btn.btn-primary{type: 'button', 'ng-click': 'pen_up()'}
+					%button.btn.btn-primary{type: 'button', 'ng-click': 'pen_up()', title: 'Move plotter pen up'}
 						%i.fa.fa-pencil
 						%i.fa.fa-arrow-up
 						Pen Up
-					%button.btn.btn-primary{type: 'button', 'ng-click': 'pen_down()'}
+					%button.btn.btn-primary{type: 'button', 'ng-click': 'pen_down()', title: 'Move plotter pen down'}
 						%i.fa.fa-pencil
 						%i.fa.fa-arrow-down
 						Pen Down
