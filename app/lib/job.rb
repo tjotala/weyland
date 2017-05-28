@@ -6,13 +6,14 @@ require 'errors'
 class Job
 	attr_reader :path, :id, :name, :size, :created, :updated, :status
 
-	STATUS_PENDING = 'pending'
-	STATUS_CONVERTING = 'converting'
-	STATUS_CONVERTED = 'converted'
-	STATUS_PRINTING = 'printing'
-	STATUS_PRINTED = 'printed'
-	STATUS_FAILED = 'failed'
-	STATUS_DELETED = 'deleted'
+	STATUS_PENDING = 'pending'.freeze
+	STATUS_CONVERTING = 'converting'.freeze
+	STATUS_CONVERTED = 'converted'.freeze
+	STATUS_PRINTING = 'printing'.freeze
+	STATUS_PRINTED = 'printed'.freeze
+	STATUS_FAILED = 'failed'.freeze
+	STATUS_MAILED = 'mailed'.freeze
+	STATUS_DELETED = 'deleted'.freeze
 
 	def eql?(rhs)
 		self.to_json == rhs.to_json
