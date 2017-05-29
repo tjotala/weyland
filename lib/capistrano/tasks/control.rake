@@ -6,7 +6,7 @@ namespace :deploy do
 	task :install_fonts do
 		on roles(:all) do |host|
 			sudo "unzip", "-o -j #{fetch(:deploy_to)}/current/fonts/*.zip '*.ttf' -d /usr/local/share/fonts"
-			sudo "cp", "#{fetch(:deploy_to)}/current/fonts/*.ttf /usr/local/share/fonts"
+			sudo "cp", "-f #{fetch(:deploy_to)}/current/fonts/*.ttf /usr/local/share/fonts"
 		end
 	end
 
