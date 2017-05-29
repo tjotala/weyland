@@ -1,8 +1,9 @@
 require 'rack/test'
+require 'pp' # hokey fix from https://github.com/fakefs/fakefs#fakefs-----typeerror-superclass-mismatch-for-class-file
 require 'fakefs/spec_helpers'
 require 'securerandom'
 require 'json'
-require File.join(File.dirname(File.expand_path(__FILE__)), '..', 'app', 'platform')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'app', 'platform'))
 
 ENV['RACK_ENV'] = 'test'
 
@@ -61,9 +62,27 @@ RSpec::Matchers.define :be_readable_path do
 	end
 end
 
+RSpec::Matchers.define :be_readable_file do
+	match do |actual|
+		File.exist?(actual) && File.readable?(actual)
+	end
+end
+
 RSpec::Matchers.define :be_writable_path do
 	match do |actual|
 		Dir.exist?(actual) && File.writable?(actual)
+	end
+end
+
+RSpec::Matchers.define :be_writable_file do
+	match do |actual|
+		File.exist?(actual) && File.writable?(actual)
+	end
+end
+
+RSpec::Matchers.define :be_executable_file do
+	match do |actual|
+		File.exist?(actual) && File.executable?(actual)
 	end
 end
 
@@ -77,7 +96,8 @@ RSpec.configure do |config|
 
 	config.around(:example) do |ex|
 		FakeFS.activate!
-		FileUtils.mkdir_p(Platform::LOCAL_PATH)
+		FileUtils.mkdir_p(Platform::SHARED_PATH)
+		FileUtils.mkdir_p(Platform::QUEUE_PATH)
 		FileUtils.mkdir_p(Platform::LOGS_PATH)
 
 		ex.run

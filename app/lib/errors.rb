@@ -16,6 +16,9 @@ end
 class ConflictedResourceError < RuntimeError
 end
 
+class TooManyRequestsError < RuntimeError
+end
+
 def internal_error(reason)
 	raise InternalError, reason
 end
@@ -25,19 +28,23 @@ def no_such_resource(reason)
 end
 
 def unauthorized
-	raise AuthenticationError, "invalid credentials"
+	raise AuthenticationError, 'invalid credentials'
 end
 
 def forbidden
-	raise AuthorizationError, "forbidden operation"
+	raise AuthorizationError, 'forbidden operation'
 end
 
 def conflicted_resource(reason)
 	raise ConflictedResourceError, "operation on resource failed: #{reason}"
 end
 
+def too_many_requests(reason)
+	raise TooManyRequestsError, "too many requests: #{reason}"
+end
+
 def invalid_token
-	raise TokenError #, "invalid token"
+	raise TokenError #, 'invalid token'
 end
 
 def not_implemented

@@ -2,45 +2,64 @@ require 'rubygems'
 require 'bundler/setup'
 require 'sinatra/base'
 require 'sinatra/json'
+#require 'sinatra/swagger'
+require 'logger'
+require 'haml'
 require 'json'
 
 require 'errors'
-require 'volumes'
+require 'queue_volume'
 require 'jobs'
+require 'converter'
 require 'plotter'
 
 class AxiDrawServer < Sinatra::Base
+	#register Sinatra::Swagger::RecommendedSetup
+	#register Sinatra::Swagger::SpecVerb
+	#register Sinatra::Swagger::VersionHeader
+	#swagger File.join(Platform::LIB_PATH, 'weyland.yaml')
+
+	::Logger.class_eval { alias :write :'<<' }
+	access_logger = ::Logger.new(::File.join(Platform::LOGS_PATH, 'access.log'))
+	error_logger = ::File.new(::File.join(Platform::LOGS_PATH, 'error.log'), 'a+')
+	error_logger.sync = true
+	$stdout = error_logger
+	$stderr = error_logger
+
 	configure do
 		set :root, Platform::ROOT_PATH
 		set :port, 8080
 		set :public_folder, Platform::PUBLIC_PATH
+		set :protection, :except => [ :http_origin ]
 		enable :static
 		set :static_cache_control, [ :public, :max_age => 60 ]
 		set :show_exceptions, false
-		set :raise_errors, false
+		set :raise_errors, true
+		set :dump_errors, false
 
 		enable :logging
-		file = File.new("/var/weyland/shared/#{settings.environment}.log", 'a+')
-		file.sync = true
-		use Rack::CommonLogger, file
+		use Rack::CommonLogger, access_logger
 
-		set :plotter, Plotter.new
-		set :jobs, Jobs.new(LocalVolume.new)
+		set :jobs, Jobs.new(QueueVolume.new, Converter.new, Plotter.new)
 	end
 
 	configure :development do
-		set :show_exceptions, true
-		set :raise_errors, true
 		set :bind, '0.0.0.0' # allow access from other hosts
 		set :static_cache_control, [ :public, :max_age => 5 ]
+		set :show_exceptions, false
+		set :raise_errors, true
+		set :dump_errors, false
 	end
 
 	before do
+	    env['rack.errors'] =  error_logger
+
 		content_type :json
 		# we don't want the client to cache these API responses
 		cache_control :public, :no_store
 
 		if request.content_type =~ /application\/json/ and request.content_length.to_i > 0
+			logger.debug 'parsing request body as JSON'
 			request.body.rewind
 			@request_json = JSON.parse(request.body.read, :symbolize_names => true)
 		end
@@ -55,7 +74,6 @@ class AxiDrawServer < Sinatra::Base
 	end
 
 	error AuthenticationError do
-		clear_token
 		halt 401, { error: env['sinatra.error'].message }.to_json
 	end
 
@@ -86,11 +104,12 @@ class AxiDrawServer < Sinatra::Base
 
 		def config
 			{
+				product: Platform::PRODUCT_FULLNAME,
 				platform: Platform::name,
 				environment: settings.environment,
 				time: Time.now.utc.iso8601,
-				total_space: LocalVolume.new.total_space,
-				available_space: LocalVolume.new.available_space,
+				total_space: settings.jobs.volume.total_space,
+				available_space: settings.jobs.volume.available_space,
 			}
 		end
 	end
@@ -100,14 +119,22 @@ class AxiDrawServer < Sinatra::Base
 	#################################################################
 
 	##
-	# Get Home Page
+	# Get Views
 	#
 	# @method GET
-	# @return 200 configuration items
+	# @return 200
 	#
-	get '/' do
-		cache_control :public, :max_age => 60
-		send_file(File.join(settings.public_folder, 'index.html'), :type => :html, :disposition => 'inline')
+	[ '/', '/:page_id' ].each do |url|
+		get url do
+			page_id = params[:page_id] || 'index'
+			not_found unless page_id =~ /\w+/
+			content_type :html
+			begin
+				haml page_id.to_sym
+			rescue Errno::ENOENT => e
+				not_found
+			end
+		end
 	end
 
 	##
@@ -116,7 +143,7 @@ class AxiDrawServer < Sinatra::Base
 	# @method GET
 	# @return 200 configuration items
 	#
-	get '/v1/config' do
+  	get '/v1/config' do
 		json config
 	end
 
@@ -160,8 +187,23 @@ class AxiDrawServer < Sinatra::Base
 	end
 
 	#################################################################
-	## Plotter Control
+	## Printer Control
 	#################################################################
+
+	##
+	# Get Version
+	#
+	# @method GET
+	# @return 200 version string
+	# @return 504 failure to communicate with printer
+	#
+	get '/v1/printer/version/?' do
+		ver = settings.jobs.plotter.version
+		logger.info "got printer version: #{ver}"
+		status 504 if ver.nil?
+		body = { version: ver }
+		json body
+	end
 
 	##
 	# Pen Up
@@ -169,8 +211,8 @@ class AxiDrawServer < Sinatra::Base
 	# @method POST
 	# @return 204 no content
 	#
-	post '/v1/pen/up/?' do
-		settings.plotter.pen(:up)
+	post '/v1/printer/pen/up/?' do
+		settings.jobs.plotter.pen(:up)
 		status 204
 	end
 
@@ -180,8 +222,8 @@ class AxiDrawServer < Sinatra::Base
 	# @method POST
 	# @return 204 no content
 	#
-	post '/v1/pen/down/?' do
-		settings.plotter.pen(:down)
+	post '/v1/printer/pen/down/?' do
+		settings.jobs.plotter.pen(:down)
 		status 204
 	end
 
@@ -203,22 +245,37 @@ class AxiDrawServer < Sinatra::Base
 	# Get Print Job Metadata
 	#
 	# @method GET
-	# @param id
+	# @param id job ID
 	# @return 200 print job
 	#
 	get '/v1/jobs/:id' do
-		json settings.jobs.get_metadata(params[:id])
+		json settings.jobs.get(params[:id])
 	end
 
 	##
 	# Get Print Job Contents
 	#
 	# @method GET
-	# @param id
+	# @param id job ID
+	# @param download true = download as attachment, false (default) = inline
 	# @return 200 print job
 	#
-	get '/v1/jobs/:id/content' do
-		send_file(settings.jobs.get_content(params[:id]), :type => 'image/svg+xml', :disposition => 'inline')
+	get '/v1/jobs/:id/contents/:which' do
+		job = settings.jobs.get(params[:id])
+		path, type, name = *case params[:which]
+		when 'original'
+			[ job.original_content_name, 'image/svg+xml', "#{job.name}.svg" ]
+		when 'converted'
+			[ job.converted_content_name, 'image/svg+xml', "#{job.name}.svg" ]
+		when 'conversion_log'
+			[ job.conversion_log_name, 'text/plain', "#{job.name}.log" ]
+		when 'print_log'
+			[ job.print_log_name, 'text/plain', "#{job.name}.log" ]
+		else
+			not_found
+		end
+		download = params[:download] == 'true'
+		send_file(path, :type => type, :disposition => download ? 'attachment' : 'inline', :filename => download ? name : nil)
 	end
 
 	##
@@ -226,27 +283,62 @@ class AxiDrawServer < Sinatra::Base
 	#
 	# @method POST
 	# @body svg SVG file
+	# @body name name (optional)
+	# @body convert convert: true/false (optional)
 	# @return 201 new print job
 	# @return 400 bad print job
 	#
 	post '/v1/jobs/?' do
-		json settings.jobs.create(@request_json[:svg])
+		json settings.jobs.create(@request_json[:svg], @request_json[:name], @request_json[:convert].nil? ? nil : @request_json[:convert])
+		status 201
 	end
 
 	##
-	# Delete All Print Jobs
+	# Print a Job
 	#
-	# @method DELETE
-	# @return 204 no content
-	# @return 404 if no such print job
+	# @method POST
+	# @param id job ID
+	# @param convert convert: true/false (optional, default is false)
+	# @return 200 OK
+	# @return 404 bad print job ID
+	# @return 409 already printing
 	#
-	delete '/v1/jobs/:id' do
-		settings.jobs.delete(params[:id])
-		status 204
+	post '/v1/jobs/:id/print' do
+		json settings.jobs.print(params[:id], params[:convert].nil? ? nil : params[:convert] == 'true')
+		status 200
+	end
+
+	##
+	# Mark a Print Job as Mailed
+	#
+	# @method POST
+	# @param id job ID
+	# @return 200 OK
+	# @return 404 bad print job ID
+	# @return 409 failed to print
+	# @return 409 not printed
+	# @return 409 already mailed
+	#
+	post '/v1/jobs/:id/mail' do
+		json settings.jobs.mail(params[:id])
+		status 200
 	end
 
 	##
 	# Delete Print Job
+	#
+	# @method DELETE
+	# @param id job ID
+	# @return 204 no content
+	# @return 404 if no such print job
+	#
+	delete '/v1/jobs/:id' do
+		settings.jobs.purge(params[:id])
+		status 204
+	end
+
+	##
+	# Delete All Print Jobs
 	#
 	# @method DELETE
 	# @param id

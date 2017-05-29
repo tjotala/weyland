@@ -1,0 +1,28 @@
+%div.modal-header
+    %button.close{type: 'button', 'ng-click': "$dismiss('cancel')"}
+        %i.fa.fa-close
+    %h3.modal-title#modal-title Upload Print Job
+%div.modal-body#modal-body
+    %form.form-horizontal#upload
+        %div.form-group
+            %label.col-md-2{'control-label': true} File:
+            %div.col-md-8
+                %file:field.btn.btn-info{'ng-model': 'file', preview: 'preview', 'ng-change': 'updateName()'}
+                    %i.fa.fa-upload
+                    Select&hellip;
+                %span{'ng-show': 'file.name'} {{file.name}} ({{file.size | bytes}})
+        %div.form-group
+            %label.col-md-2{'control-label': true} Name:
+            %div.col-md-8
+                %input.form-control{type: 'text', 'ng-model': 'name', placeholder: '<name>'}
+        %div.form-group
+            %label.col-md-2
+            %div.col-md-8
+                %input{type: 'checkbox', 'ng-model': 'convert'} &nbsp;Convert SVG text to paths
+        %div.panel.panel-default.text-center{'ng-show': 'preview'}
+            %div.panel-heading Preview: {{file.name}} ({{file.size | bytes}})
+            %div.panel-body
+                %img.img-responsive.center-block{'ng-src': '{{preview}}'}
+%div.modal-footer
+    %button.btn.btn-primary{type: 'button', 'ng-click': 'ok()', 'ng-disabled': '!file.name'} OK
+    %button.btn.btn-warning{type: 'button', 'ng-click': "$dismiss('cancel')"} Cancel

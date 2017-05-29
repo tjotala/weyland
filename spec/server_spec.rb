@@ -10,42 +10,42 @@ describe AxiDrawServer do
 		FakeFS.activate!
 	end
 
-	it "should return homepage" do
-		get "/"
+	it 'should return homepage' do
+		get '/'
 		expect( last_response ).to be_ok
 		expect( last_response ).to be_html
 	end
 
-	it "should respond to ping" do
-		get "/v1/ping"
+	it 'should respond to ping' do
+		get '/v1/ping'
 		expect( last_response ).to be_ok
 		expect( last_response ).to be_plain_text
-		expect( last_response.body ).to eq("ok")
+		expect( last_response.body ).to eq('ok')
 	end
 
-	it "should respond to configuration request" do
-		get "/v1/config"
+	it 'should respond to configuration request' do
+		get '/v1/config'
 		expect( last_response ).to be_ok
 		expect( last_response ).to be_json
 	end
 
-	it "should quit" do
+	it 'should quit' do
 		expect( Kernel ).to receive(:sleep) # and eat it
 		expect( Platform ).to receive(:quit) # and eat it
 		expect( Thread ).to receive(:new).and_yield # don't spawn the background thread
-		post "/v1/quit"
+		post '/v1/quit'
 		expect( last_response ).to be_empty
 	end
 
-	it "should shutdown" do
+	it 'should shutdown' do
 		allow( Kernel ).to receive(:sleep) # and eat it
 		expect( Platform ).to receive(:shutdown) # and eat it
 		expect( Thread ).to receive(:new).and_yield # don't spawn the background thread
-		post "/v1/shutdown"
+		post '/v1/shutdown'
 		expect( last_response ).to be_empty
 	end
 
-	it "should return not found JSON to garbage URL" do
+	it 'should return not found JSON to garbage URL' do
 		get "/#{Uuid.new_uuid}"
 		expect( last_response ).to be_not_found
 		expect( last_response ).to be_json

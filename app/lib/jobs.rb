@@ -1,36 +1,86 @@
 require 'fileutils'
 require 'securerandom'
+require 'thread'
 
 require 'job'
 
 class Jobs
-	def initialize(volume)
+	attr_reader :volume, :converter, :plotter
+
+	def initialize(volume, converter, plotter)
 		@volume = volume
+		@converter = converter
+		@plotter = plotter
+		@stopped = false
+		@conversion_queue = Queue.new
+		@conversion_thread = Thread.new do
+			until @stopped do
+				job = @conversion_queue.pop
+				if job.convert(@converter)
+					# succeeded to convert
+					# just leave it be, it's already marked converted
+				else
+					# failed to convert
+					# just leave it be, it's already marked failed
+				end
+			end
+		end
+		@print_queue = Queue.new
+		@print_thread = Thread.new do
+			until @stopped do
+				job = @print_queue.pop
+				if job.print(@converter, @plotter)
+					# succeeded to print
+					# just leave it be, it's already marked printed
+				else
+					# failed to print
+					# just leave it be, it's already marked failed
+				end
+			end
+		end
 	end
 
 	def list
-		Dir[File.join(base_path, '*')].reject { |path| self.class.exclude?(path) }.map { |path| Job.new(path) }.sort_by { |job| job.created }
+		Dir[File.join(base_path, '*')].map { |path| Job::get(path) rescue nil }.compact.sort_by { |job| job.created }
 	end
 
-	def get_metadata(id)
-		Job.new(path_from(id))
+	def get(id)
+		Job::get(path_from(id))
 	end
 
-	def get_content(id)
-		path_from(id)
+	def create(svg, name, convert)
+		id = new_id
+		job = Job::create(path_from(id), id, svg, name, convert)
+		@conversion_queue.push(job) if convert
 	end
 
-	def create(svg)
-		job = Job.new(path_from(new_id))
-		job.create(svg)
+	def print(id, convert)
+		job = get(id)
+		conflicted_resource('already printing') if job.printing?
+		too_many_requests('another job is already printing') if @print_queue.length > 0
+		job.convert = convert unless convert.nil?
+		@print_queue.push(job)
+		job
 	end
 
-	def delete(id)
-		Job.new(path_from(id)).remove
+	def mail(id)
+		job = get(id)
+		conflicted_resource('failed to print') unless job.failed?
+		conflicted_resource('not yet printed') unless job.printed?
+		conflicted_resource('already mailed') if job.mailed?
+		job.mail
+	end
+
+	def purge(id)
+		get(id).purge
 	end
 
 	def clear
-		list.each { |job| job.remove }
+		list.each { |job| job.purge }
+	end
+
+	def stop
+		@stopped = true
 	end
 
 	private
@@ -42,19 +92,15 @@ class Jobs
 	end
 
 	def path_from(id)
-		validate(id)
+		self.class.validate(id)
 		File.join(base_path, id)
 	end
 
 	def new_id
-		SecureRandom.hex # this could generate collisions, but it's good enough for now
+		SecureRandom.hex(8) # this could generate collisions, but it's good enough for now
 	end
 
 	class << self
-		def exclude?(path)
-			!valid_id?(File.basename(path))
-		end
-
 		def valid_id?(id)
 			id =~ /^\h+$/
 		end

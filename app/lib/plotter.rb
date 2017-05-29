@@ -1,11 +1,15 @@
 class Plotter
+	TOOL_PATH = File.expand_path(File.join(Platform::BIN_PATH, 'axidraw_standalone', 'axicli.py')).freeze
+	SAMPLE_PATH = File.expand_path(File.join(Platform::BIN_PATH, 'AxiDraw_trivial.svg')).freeze
+
 	def version
-		manual('version-check')
+		ver = manual('version-check')
+		return nil if ver.nil?
+		(ver[/(Firmware.+)/, 1] || '<no version>').chomp.strip
 	end
 
-	def reset
+	def home
 		resume('justGoHome')
-		motors(:off)
 	end
 
 	def motors(state = :on)
@@ -17,7 +21,7 @@ class Plotter
 	end
 
 	def plot(filename)
-		execute('plot', '--reportTime=true', filename)
+		execute('plot', '--autoRotate=false --reportTime=true', filename)
 	end
 
 	private
@@ -30,7 +34,7 @@ class Plotter
 		execute('resume', "--resumeType=#{cmd}")
 	end
 
-	def execute(mode, opt, file = 'bogus.svg')
-		Platform.run("python axicli.py --mode=#{mode} #{opt} #{filename}")
+	def execute(mode, opt, filename = SAMPLE_PATH)
+		Platform::run("cd #{File.dirname(TOOL_PATH)}; #{TOOL_PATH} --mode=#{mode} #{opt} #{filename} 2>&1", true)
 	end
 end

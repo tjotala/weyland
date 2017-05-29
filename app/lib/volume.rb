@@ -58,6 +58,4 @@ class Volume
 	end
 end
 
-require 'local_volume'
-require 'cloud_volume'
 require 'removable_volume'
