@@ -110,6 +110,7 @@ class AxiDrawServer < Sinatra::Base
 				time: Time.now.utc.iso8601,
 				total_space: settings.jobs.volume.total_space,
 				available_space: settings.jobs.volume.available_space,
+				converter: settings.jobs.converter.version,
 			}
 		end
 	end
