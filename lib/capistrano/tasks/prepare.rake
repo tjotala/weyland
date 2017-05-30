@@ -47,7 +47,7 @@ namespace :deploy do
 		task :system_extras do
 			on roles(:all) do |host|
 				sudo "apt-get", "-y install nginx"
-				sudo "rm", "-f /etc/nginx/sites-enabled/default"
+				sudo "rm", "-vf /etc/nginx/sites-enabled/default"
 				sudo "gem", "install bundler --no-document"
 				execute "echo", ". #{fetch(:deploy_to)}/current/bin/run.sh >> /home/#{fetch(:user)}/.profile"
 			end
@@ -64,9 +64,9 @@ namespace :deploy do
 		desc "Create root folders"
 		task :folders do
 			on roles(:all) do |host|
-				sudo "mkdir", "-p #{fetch(:deploy_to)}"
+				sudo "mkdir", "-vp #{fetch(:deploy_to)}"
 				sudo "chown", "#{fetch(:user)} #{fetch(:deploy_to)}"
-				execute "mkdir", "-p #{fetch(:deploy_to)}/shared/{logs,queue}"
+				execute "mkdir", "-vp #{fetch(:deploy_to)}/shared/{logs,queue}"
 			end
 		end
 
@@ -89,9 +89,9 @@ namespace :deploy do
 				filename = "AxiDraw_122_MacLinux.zip"
 				ext_folder = "/home/#{fetch(:user)}/.config/inkscape/extensions"
 				execute "curl", "--silent --location --output #{temp_folder}/#{filename} https://github.com/evil-mad/axidraw/releases/download/#{version}/#{filename}"
-				execute "mkdir", "-p #{ext_folder}"
+				execute "mkdir", "-vp #{ext_folder}"
 				execute "unzip", "-o #{temp_folder}/#{filename} -d #{ext_folder}"
-				execute "rm", "#{temp_folder}/#{filename}"
+				execute "rm", "-v #{temp_folder}/#{filename}"
 			end
 		end
 
@@ -109,7 +109,7 @@ namespace :deploy do
 		task :setup do
 			run_locally do
 				execute "brew", "install nginx" # this barfs due to gems
-				execute "ln", "-sf #{Dir.pwd}/config/weyland.conf /usr/local/etc/nginx/servers/weyland.conf"
+				execute "ln", "-svf #{Dir.pwd}/config/weyland.conf /usr/local/etc/nginx/servers/weyland.conf"
 			end
 		end
 

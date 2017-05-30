@@ -6,7 +6,7 @@ namespace :deploy do
 	task :install_fonts do
 		on roles(:all) do |host|
 			sudo "find", "#{fetch(:deploy_to)}/current/fonts -iname '*.zip' -print0 | xargs -0 -i sudo unzip -o -j '{}' '*.ttf' -d /usr/local/share/fonts"
-			sudo "find", "#{fetch(:deploy_to)}/current/fonts -iname '*.ttf' -print0 | xargs -0 -i sudo cp -f '{}' /usr/local/share/fonts"
+			sudo "find", "#{fetch(:deploy_to)}/current/fonts -iname '*.ttf' -print0 | xargs -0 -i sudo cp -vf '{}' /usr/local/share/fonts"
 		end
 	end
 
@@ -15,7 +15,7 @@ namespace :deploy do
 	desc "Start server"
 	task :start do
 		on roles(:all) do |host|
-			sudo "ln", "-sf #{fetch(:deploy_to)}/current/config/weyland.conf /etc/nginx/sites-enabled/weyland"
+			sudo "ln", "-svf #{fetch(:deploy_to)}/current/config/weyland.conf /etc/nginx/sites-enabled/weyland"
 			sudo "service", "nginx restart"
 			execute "bash", "#{fetch(:deploy_to)}/current/bin/run.sh"
 		end
