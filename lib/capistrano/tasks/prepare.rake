@@ -87,7 +87,7 @@ namespace :deploy do
 				ext_folder = "/home/#{fetch(:user)}/.config/inkscape/extensions"
 				execute "curl", "--silent --location --output #{temp_folder}/#{filename} https://github.com/evil-mad/axidraw/releases/download/#{version}/#{filename}"
 				execute "mkdir", "-p #{ext_folder}"
-				execute "unzip", "#{temp_folder}/#{filename} -o -d #{ext_folder}"
+				execute "unzip", "-o #{temp_folder}/#{filename} -d #{ext_folder}"
 				execute "rm", "#{temp_folder}/#{filename}"
 			end
 		end
