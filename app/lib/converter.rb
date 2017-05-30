@@ -6,6 +6,7 @@ class Converter
 	end
 
 	def convert(src, dest)
-		Platform::run("#{TOOL_PATH} --without-gui --export-plain-svg=#{dest} --export-text-to-path #{src}")
+		cmd = "#{TOOL_PATH} --without-gui --export-plain-svg=#{dest} --export-text-to-path #{src}"
+		Platform::run("echo #{cmd}; #{cmd}")
 	end
 end
