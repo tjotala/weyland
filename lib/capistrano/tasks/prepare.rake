@@ -39,6 +39,7 @@ namespace :deploy do
 				sudo "apt-get", "-y upgrade"
 				sudo "apt-get", "-y install ntpdate"
 				sudo "ntpdate", "-u pool.ntp.org"
+				sudo "apt-get", "-y install tightvncserver"
 			end
 		end
 
@@ -69,11 +70,13 @@ namespace :deploy do
 			end
 		end
 
-		desc "Install Inkscape"
+		desc "Install Inkscape 0.92"
 		task :inkscape do
 			on roles(:all) do |host|
-				sudo "curl", "--silent --location --output /var/cache/apt/archives/inkscape_0.92.1-1_armhf.deb http://snapshot.debian.org/archive/debian/20170216T152027Z/pool/main/i/inkscape/inkscape_0.92.1-1_armhf.deb"
-				sudo "apt-get", "-y install inkscape" # install from /var/cache/...
+				sudo "apt-get", "-y remove inkscape"
+				sudo "echo", "deb http://ftp.debian.org/debian jessie-backports main | sudo tee /etc/apt/sources.list.d/inkscape.list"
+				sudo "apt-get", "-y update"
+				sudo "apt-get", "-t jessie-backports -y --force-yes install inkscape"
 				sudo "apt-get", "-y install python-lxml"
 			end
 		end
