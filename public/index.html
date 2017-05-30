@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Weyland</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="lib/styles/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="lib/styles/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="styles/app.css">
+	</head>
+	<body>
+		<div class="container" id="jobs">
+			<div class="page-header">
+				<h1>Weyland</h1>
+				<img class="logo" src="images/logo.jpg">
+			</div>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Created</th>
+						<th>Size</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<template v-for="job in jobs" :key="job.id">
+						<tr>
+							<td>{{job.id}}</td>
+							<td>{{job.created}}</td>
+							<td>{{job.size}}</td>
+							<td>
+								<button type="button" class="btn btn-info" v-on:click="view(job.id)"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;View</button>
+								<button type="button" class="btn btn-warning" v-on:click="delete(job.id)"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete</button>
+							</td>
+						</tr>
+					</template>
+				</tbody>
+			</table>
+			<button type="button" class="btn btn-success" v-on:click="refresh()"><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;Refresh</button>
+			<button type="button" class="btn btn-primary" v-bind:disabled="paused" v-on:click="pause()"><i class="fa fa-pause" aria-hidden="true"></i>&nbsp;Pause</button>
+			<button type="button" class="btn btn-primary" v-bind:disabled="!paused" v-on:click="resume()"><i class="fa fa-play" aria-hidden="true"></i>&nbsp;Resume</button>
+			<button type="button" class="btn btn-primary" v-bind:disabled="!paused" v-on:click="pen_up()"><i class="fa fa-pencil" aria-hidden="true"></i><i class="fa fa-arrow-up" aria-hidden="true"></i>&nbsp;Pen Up</button>
+			<button type="button" class="btn btn-primary" v-bind:disabled="!paused" v-on:click="pen_down()"><i class="fa fa-pencil" aria-hidden="true"></i><i class="fa fa-arrow-down" aria-hidden="true"></i>&nbsp;Pen Down</button>
+			<button type="button" class="btn btn-danger" v-bind:disabled="jobs.length == 0" v-on:click="clear()"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete All</button>
+		</div>
+	</body>
+	<script src="lib/scripts/vue.min.js"></script>
+	<script src="lib/scripts/axios.min.js"></script>
+	<script src="scripts/app.js"></script>
+</html>
