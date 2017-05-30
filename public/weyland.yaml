@@ -309,6 +309,15 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/print_job"
+          headers:
+            Location:
+              description: "URL of the print job"
+              type: string
+              example: "http://localhost:4242/v1/jobs/850b6f6d85128295"
+            Last-Modified:
+              description: "Last modified date/time of the print job"
+              type: string
+              example: "Tue, 30 May 2017 23:11:54 GMT"
 
     delete:
       summary: "Delete All Print Jobs"
@@ -333,14 +342,34 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/print_job"
+          headers:
+            Location:
+              description: "URL of the print job"
+              type: string
+              example: "http://localhost:4242/v1/jobs/850b6f6d85128295"
+            Last-Modified:
+              description: "Last modified date/time of the print job"
+              type: string
+              example: "Tue, 30 May 2017 23:11:54 GMT"
 
     delete:
       summary: "Delete Print Job"
       tags:
         - Jobs
       responses:
-        204:
+        200:
           description: "OK"
+          schema:
+            $ref: "#/definitions/print_job"
+          headers:
+            Location:
+              description: "URL of the print job"
+              type: string
+              example: "http://localhost:4242/v1/jobs/850b6f6d85128295"
+            Last-Modified:
+              description: "Last modified date/time of the print job"
+              type: string
+              example: "Tue, 30 May 2017 23:11:54 GMT"
 
   /v1/jobs/{job_id}/contents/{content_id}:
     get:
@@ -381,6 +410,15 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/print_job"
+          headers:
+            Location:
+              description: "URL of the print job"
+              type: string
+              example: "http://localhost:4242/v1/jobs/850b6f6d85128295"
+            Last-Modified:
+              description: "Last modified date/time of the print job"
+              type: string
+              example: "Tue, 30 May 2017 23:11:54 GMT"
         409:
           description: "print job is already printing"
         429:
@@ -401,6 +439,15 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/print_job"
+          headers:
+            Location:
+              description: "URL of the print job"
+              type: string
+              example: "http://localhost:4242/v1/jobs/850b6f6d85128295"
+            Last-Modified:
+              description: "Last modified date/time of the print job"
+              type: string
+              example: "Tue, 30 May 2017 23:11:54 GMT"
         409:
           description: "print job failed to print"
         409:

@@ -52,6 +52,7 @@ class Jobs
 		id = new_id
 		job = Job::create(path_from(id), id, svg, name, convert)
 		@conversion_queue.push(job) if convert
+		job
 	end
 
 	def print(id, convert)
