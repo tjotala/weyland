@@ -6,6 +6,7 @@ class Plotter
 	def version
 		ver = manual('version-check')
 		return nil if ver.nil?
+		return '<not connected>' if ver =~ /Failed to connect to AxiDraw/
 		(ver[/(Firmware.+)/, 1] || '<no version>').chomp.strip
 	end
 
