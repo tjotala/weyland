@@ -12,8 +12,28 @@ require 'queue_volume'
 require 'jobs'
 require 'converter'
 require 'plotter'
+require 'fonts'
 
-class AxiDrawServer < Sinatra::Base
+module Http
+	module Headers
+		CONTENT_TYPE = 'Content-Type'.freeze
+		CONTENT_DISPOSITION = 'Content-Disposition'.freeze
+		LOCATION = 'Location'.freeze
+		LAST_MODIFIED = 'Last-Modified'.freeze
+		POWERED_BY = 'X-Powered-By'.freeze
+		QUOTE = 'X-Quote'.freeze
+	end
+end
+
+module MimeTypes
+	HTML = Sinatra::Base.mime_type(:html).freeze
+	JSON = Sinatra::Base.mime_type(:json).freeze
+	PLAINTEXT = Sinatra::Base.mime_type(:txt).freeze
+	SVG = Sinatra::Base.mime_type(:svg).freeze
+	TRUETYPE = 'application/font-sfnt'.freeze # not application/octet-stream
+end
+
+class Server < Sinatra::Base
 	#register Sinatra::Swagger::RecommendedSetup
 	#register Sinatra::Swagger::SpecVerb
 	#register Sinatra::Swagger::VersionHeader
@@ -25,11 +45,6 @@ class AxiDrawServer < Sinatra::Base
 	error_logger.sync = true
 	$stdout = error_logger
 	$stderr = error_logger
-
-	HTTP_LOCATION = 'Location'.freeze
-	HTTP_LAST_MODIFIED = 'Last-Modified'.freeze
-	HTTP_POWERED_BY = 'X-Powered-By'.freeze
-	HTTP_QUOTE = 'X-Quote'.freeze
 
 	WEYLAND_QUOTES = [
 		"My name is Peter Weyland, and if you'll indulge me, I'd like to change the world.",
@@ -54,6 +69,7 @@ class AxiDrawServer < Sinatra::Base
 		use Rack::CommonLogger, access_logger
 
 		set :jobs, Jobs.new(QueueVolume.new, Converter.new, Plotter.new)
+		set :fonts, Fonts.new
 	end
 
 	configure :development do
@@ -67,13 +83,13 @@ class AxiDrawServer < Sinatra::Base
 	before do
 	    env['rack.errors'] =  error_logger
 
-		content_type :json
+		content_type MimeTypes::JSON
 		# we don't want the client to cache these API responses
 		cache_control :public, :no_store
-		headers HTTP_QUOTE => "#{WEYLAND_QUOTES.sample} - Peter Weyland"
-		headers HTTP_POWERED_BY => Platform::PRODUCT_FULLNAME
+		headers Http::Headers::QUOTE => "#{WEYLAND_QUOTES.sample} - Peter Weyland"
+		headers Http::Headers::POWERED_BY => Platform::PRODUCT_FULLNAME
 
-		if request.content_type =~ /application\/json/ and request.content_length.to_i > 0
+		if request.content_type =~ /^#{MimeTypes::JSON}/ and request.content_length.to_i > 0
 			logger.debug 'parsing request body as JSON'
 			request.body.rewind
 			@request_json = JSON.parse(request.body.read, :symbolize_names => true)
@@ -130,8 +146,8 @@ class AxiDrawServer < Sinatra::Base
 		end
 
 		def job_headers(job)
-			headers HTTP_LOCATION => uri("/v1/jobs/#{job.id}")
-			headers HTTP_LAST_MODIFIED => job.updated.httpdate
+			headers Http::Headers::LOCATION => uri("/v1/jobs/#{job.id}")
+			headers Http::Headers::LAST_MODIFIED => job.updated.httpdate
 			job
 		end
 	end
@@ -146,15 +162,15 @@ class AxiDrawServer < Sinatra::Base
 	# @method GET
 	# @return 200
 	#
-	[ '/', '/:page_id' ].each do |url|
+	[ '/', '/:page_id/?' ].each do |url|
 		get url do
 			page_id = params[:page_id] || 'index'
 			not_found unless page_id =~ /\w+/
-			content_type :html
+			content_type MimeTypes::HTML
 			begin
 				haml page_id.to_sym
-			rescue Errno::ENOENT => e
-				not_found
+			rescue Errno::ENOENT
+				send_file(File.join(Platform::PUBLIC_PATH, page_id, 'index.html'))
 			end
 		end
 	end
@@ -176,7 +192,7 @@ class AxiDrawServer < Sinatra::Base
 	# @return 200 ok
 	#
 	get '/v1/ping' do
-		content_type :text
+		content_type MimeTypes::PLAINTEXT
 		'ok'
 	end
 
@@ -205,6 +221,61 @@ class AxiDrawServer < Sinatra::Base
 			Kernel::sleep(2)
 			Platform::shutdown
 		end
+		status 204
+	end
+
+	#################################################################
+	## Fonts
+	#################################################################
+
+	##
+	# Get Fonts
+	#
+	# @method GET
+	# @return 200 list of font names
+	#
+	get '/v1/fonts/?' do
+		status 200
+		json settings.fonts.list
+	end
+
+	##
+	# Get Font
+	#
+	# @method GET
+	# @param font_name
+	# @return 200 font file
+	#
+	get '/v1/fonts/:font_name' do
+		status 200
+		name = params[:font_name]
+		path = settings.fonts.get(name).path
+		download = params[:download] == 'true'
+		send_file(path, :type => MimeTypes::TRUETYPE, :disposition => download ? 'attachment' : 'inline', :filename => download ? name : nil)
+	end
+
+	##
+	# Add Font
+	#
+	# @method PUT
+	# @param font_name name of the font
+	# @param body new font file
+	# @return 204 no content
+	#
+	put '/v1/fonts/:font_name?' do
+		settings.fonts.add(params[:font_name], request.body.read)
+		status 204
+	end
+
+	##
+	# Remove Font
+	#
+	# @method DELETE
+	# @param name name of font to remove
+	# @return 204 no content
+	#
+	delete '/v1/fonts/:font_name?' do
+		settings.fonts.remove(params[:font_name])
 		status 204
 	end
 
@@ -287,13 +358,13 @@ class AxiDrawServer < Sinatra::Base
 		job = settings.jobs.get(params[:id])
 		path, type, name = *case params[:which]
 		when 'original'
-			[ job.original_content_name, 'image/svg+xml', "#{job.name}.svg" ]
+			[ job.original_content_name, MimeTypes::SVG, "#{job.name}.svg" ]
 		when 'converted'
-			[ job.converted_content_name, 'image/svg+xml', "#{job.name}.svg" ]
+			[ job.converted_content_name, MimeTypes::SVG, "#{job.name}.svg" ]
 		when 'conversion_log'
-			[ job.conversion_log_name, 'text/plain', "#{job.name}.log" ]
+			[ job.conversion_log_name, MimeTypes::PLAINTEXT, "#{job.name}.log" ]
 		when 'print_log'
-			[ job.print_log_name, 'text/plain', "#{job.name}.log" ]
+			[ job.print_log_name, MimeTypes::PLAINTEXT, "#{job.name}.log" ]
 		else
 			not_found
 		end

@@ -23,7 +23,7 @@ end
 
 module RSpecMixin
 	include Rack::Test::Methods
-	def app() AxiDrawServer end
+	def app() Server end
 end
 
 RSpec::Matchers.define :be_frozen do
@@ -96,6 +96,7 @@ RSpec.configure do |config|
 
 	config.around(:example) do |ex|
 		FakeFS.activate!
+		FileUtils.mkdir_p(Platform::FONT_PATH)
 		FileUtils.mkdir_p(Platform::SHARED_PATH)
 		FileUtils.mkdir_p(Platform::QUEUE_PATH)
 		FileUtils.mkdir_p(Platform::LOGS_PATH)

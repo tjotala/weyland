@@ -1,6 +1,7 @@
 module Platform
 	require 'open3'
 
+	FONT_PATH = File.expand_path(File.join('~', 'Library', 'Fonts')).freeze
 	SHARED_PATH = File.expand_path(File.join(ROOT_PATH, '..', 'shared')).freeze
 	QUEUE_PATH = File.expand_path(File.join(SHARED_PATH, 'queue')).freeze
 	LOGS_PATH = File.expand_path(File.join(SHARED_PATH, 'logs')).freeze

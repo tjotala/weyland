@@ -107,9 +107,9 @@ class Job
 		FileUtils.rm_rf(@path)
 		@status = STATUS_DELETED # not persisted though
 		self
-	rescue Errno::ENOENT => e
+	rescue Errno::ENOENT
 		no_such_resource(@id)
-	rescue Errno::EACCES => e
+	rescue Errno::EACCES
 		forbidden
 	end
 
@@ -186,7 +186,7 @@ class Job
 			job = Job.new(path: path, id: id, name: name, size: content.bytesize, convert: convert).save
 			File.write(job.original_content_name, content)
 			job
-		rescue Errno::EACCES => e
+		rescue Errno::EACCES
 			forbidden
 		end
 
@@ -196,9 +196,9 @@ class Job
 			json[:updated] = Time.parse(json[:updated])
 			json[:path] = path
 			Job.new(json)
-		rescue Errno::ENOENT => e
+		rescue Errno::ENOENT
 			no_such_resource(File::basename(path))
-		rescue Errno::EACCES => e
+		rescue Errno::EACCES
 			forbidden
 		end
 	end

@@ -2,38 +2,44 @@ swagger: "2.0"
 
 info:
   title: "Weyland"
-  description: "Print Server for [AxiDraw v3](http://axidraw.com/) pen plotter by [Evil Mad Scientist](http://www.evilmadscientist.com/)"
+  description: >
+    Print Server for [AxiDraw v3](http://axidraw.com/) pen plotter by [Evil Mad Scientist](http://www.evilmadscientist.com/).
+    This project is in no way associated with or endorsed by Evil Mad Scientist.
   version: "1"
   contact:  
     name: "Tapani Otala"
     url: "http://github.com/tjotala/weyland"
+    email: "projects@tjotala.com"
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+
+host: "{weyland}"
 
 schemes:
   - "http"
 
 parameters:
   job_id:
+    in: path
     name: job_id
     description: "Unique ID that identifies each print job. Consists of 16 hex digits."
-    in: path
     required: true
     type: string
     format: binary
     example: "f2f13e3b58de5da2"
 
   convert:
+    in: query
     description: "Convert text to paths with Inkscape (overrides original request). Default is false."
     name: convert
-    in: query
     type: boolean
     required: false
     default: false
     example: true
 
   content_id:
+    in: path
     name: content_id
     description: >
       Identifies the type of content requested.
@@ -41,7 +47,6 @@ parameters:
       * `converted` is the print job file after converting text-to-path
       * `conversion_log` is the log file generated during conversion
       * `print_log` is the log file generated during printing
-    in: path
     required: true
     type: string
     enum:
@@ -52,41 +57,29 @@ parameters:
     example: "original"
 
   download:
+    in: query
     description: "Controls what is returned as the Content-Disposition header value. If true, returns `attachment` with a filename. If false, returns `inline`. Default is false."
     name: download
-    in: query
     type: boolean
     required: false
     default: false
     example: true
 
+  font_id:
+    in: path
+    name: font_id
+    description: "Font name. May only contain alphanumeric characters and end in `.ttf`."
+    required: true
+    type: string
+    example: "Arial.ttf"
+
   new_print_job:
-    name: new_print_job
     in: body
+    name: new_print_job
     description: New print job
     required: true
     schema:
-      type: object
-      required:
-        - svg
-      properties:
-        name:
-          description: "Print job name. Default is empty string."
-          type: string
-          required: false
-          default: ""
-          example: "Test Print"
-        svg:
-          description: "Print job content (encoded as JSON-safe string)"
-          type: string
-          format: binary
-          example: "see a SVG file"
-        convert:
-          description: "Convert text to paths with Inkscape. Default is false."
-          type: boolean
-          required: false
-          default: false
-          example: true
+      $ref: "#/definitions/new_print_job"
 
 definitions:
   server_configuration:
@@ -139,6 +132,28 @@ definitions:
     required:
       - version
 
+  new_print_job:
+    title: New Print Job
+    type: object
+    properties:
+      name:
+        description: "Print job name. Default is empty string."
+        type: string
+        default: ""
+        example: "Test Print"
+      svg:
+        description: "Print job content (encoded as JSON-safe string)"
+        type: string
+        format: binary
+        example: "see a SVG file"
+      convert:
+        description: "Convert text to paths with Inkscape. Default is false."
+        type: boolean
+        default: false
+        example: true
+    required:
+      - svg
+
   print_job:
     title: Print job
     type: object
@@ -190,6 +205,28 @@ definitions:
     items:
       $ref: "#/definitions/print_job"
 
+  font:
+    title: Font
+    type: object
+    properties:
+      name:
+        description: "Font name (ID)"
+        type: string
+        example: "Arial.ttf"
+      size:
+        description: "Font size"
+        type: integer
+        example: 2904
+    required:
+      - name
+      - size
+
+  fonts:
+    title: Fonts
+    type: array
+    items:
+      $ref: "#/definitions/font"
+
 tags:
   - name: System
     description: System APIs
@@ -197,10 +234,13 @@ tags:
     description: Printer APIs
   - name: Jobs
     description: Print Job APIs
+  - name: Fonts
+    description: Font APIs
 
 paths:
   /v1/config:
     get:
+      operationId: GetConfig
       summary: "Returns system configuration information"
       tags:
         - System
@@ -214,6 +254,7 @@ paths:
 
   /v1/ping:
     get:
+      operationId: Ping
       summary: "Health check"
       tags:
         - System
@@ -228,6 +269,7 @@ paths:
 
   /v1/quit:
     get:
+      operationId: Quit
       summary: "Shutdown server"
       tags:
         - System
@@ -237,6 +279,7 @@ paths:
 
   /v1/shutdown:
     get:
+      operationId: Shutdown
       summary: "Shutdown appliance"
       tags:
         - System
@@ -246,6 +289,7 @@ paths:
 
   /v1/printer/version:
     get:
+      operationId: GetPrinterVersion
       summary: "Returns printer firmware version"
       description: "This API can be used to test connectivity to the printer."
       tags:
@@ -262,6 +306,7 @@ paths:
 
   /v1/printer/pen/up:
     post:
+      operationId: MovePrinterPenUp
       summary: "Moves printer pen up"
       tags:
         - Printer
@@ -273,6 +318,7 @@ paths:
 
   /v1/printer/pen/down:
     post:
+      operationId: MovePrinterPenDown
       summary: "Moves printer pen down"
       tags:
         - Printer
@@ -284,6 +330,7 @@ paths:
 
   /v1/jobs:
     get:
+      operationId: ListPrintJobs
       summary: "List print jobs"
       tags:
         - Jobs
@@ -296,6 +343,7 @@ paths:
             $ref: "#/definitions/print_jobs"
 
     post:
+      operationId: CreateNewPrintJob
       summary: "Create New Print Job"
       description: "Creates a new print job. The job is placed in a background queue for conversions, if conversion was requested. Either way, it will not be sent to the printer until the Print API is called."
       tags:
@@ -320,6 +368,7 @@ paths:
               example: "Tue, 30 May 2017 23:11:54 GMT"
 
     delete:
+      operationId: DeleteAllPrintJobs
       summary: "Delete All Print Jobs"
       tags:
         - Jobs
@@ -330,8 +379,8 @@ paths:
   /v1/jobs/{job_id}:
     parameters:
       - $ref: "#/parameters/job_id"
-
     get:
+      operationId: GetPrintJobInfo
       summary: "Get Print Job Information"
       tags:
         - Jobs
@@ -353,6 +402,7 @@ paths:
               example: "Tue, 30 May 2017 23:11:54 GMT"
 
     delete:
+      operationId: DeletePrintJob
       summary: "Delete Print Job"
       tags:
         - Jobs
@@ -373,6 +423,7 @@ paths:
 
   /v1/jobs/{job_id}/contents/{content_id}:
     get:
+      operationId: GetPrintJobContent
       summary: "Get Print Job Content"
       tags:
         - Jobs
@@ -396,6 +447,7 @@ paths:
 
   /v1/jobs/{job_id}/print:
     post:
+      operationId: PrintPrintJob
       summary: "Print a Job"
       description: "Puts the print job in a background queue for printing. If conversion was requested and the job had not been converted yet, it will be converted first."
       tags:
@@ -426,6 +478,7 @@ paths:
 
   /v1/jobs/{job_id}/mail:
     post:
+      operationId: MailPrintJob
       summary: "Mark a Print Job as Mailed"
       description: "Marks the print job as having been mailed."
       tags:
@@ -449,8 +502,71 @@ paths:
               type: string
               example: "Tue, 30 May 2017 23:11:54 GMT"
         409:
-          description: "print job failed to print"
-        409:
-          description: "job has not yet been printed"
-        409:
-          description: "print job was already mailed"
+          description: "print job failed to print, or has not yet been printed, or was already mailed"
+
+  /v1/fonts:
+    get:
+      operationId: ListFonts
+      summary: "List Fonts"
+      description: "Lists installed fonts. This only includes custom fonts, not stock Linux fonts."
+      tags:
+        - Fonts
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/fonts"
+
+  /v1/fonts/{font_id}:
+    parameters:
+      - $ref: "#/parameters/font_id"
+    get:
+      operationId: GetFont
+      summary: "Get Font"
+      description: "Retrieves the requested font. This only includes custom fonts, not stock Linux fonts."
+      tags:
+        - Fonts
+      parameters:
+        - $ref: "#/parameters/download"
+      produces:
+        - "application/font-sfnt"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: file
+          headers:
+            Content-Disposition:
+              description: "Tells the browser whether to render the content inline, or download as attachment"
+              type: string
+              example: "inline"
+        400:
+          description: "bad request (malformed name)"
+        404:
+          description: "no such font"
+    put:
+      operationId: InstallFont
+      summary: "Install New Font"
+      description: "Installs a new font. Replaces existing font with same name. This only includes custom fonts, not stock Linux fonts."
+      tags:
+        - Fonts
+      responses:
+        204:
+          description: "OK"
+        400:
+          description: "bad request (malformed name)"
+    delete:
+      operationId: RemoveFont
+      summary: "Remove Installed Font"
+      description: "Removes an previously installed font. This only includes custom fonts, not stock Linux fonts."
+      tags:
+        - Fonts
+      responses:
+        204:
+          description: "OK"
+        400:
+          description: "bad request (malformed name)"
+        404:
+          description: "no such font"

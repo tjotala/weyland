@@ -7,4 +7,4 @@ require 'sinatra/json'
 require File.join(File.dirname(File.expand_path(__FILE__)), 'platform')
 require 'server'
 
-AxiDrawServer.run!
+Server.run!

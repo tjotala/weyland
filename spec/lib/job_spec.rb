@@ -8,7 +8,7 @@ describe Job do
 	let(:content) { '<svg...mock_attr="foobar"></svg>' }
 	let(:name) { 'mock name' }
 
-	describe :create do
+	describe '#create' do
 		it 'should create a new job with defaults' do
 			job = Job::create(path, id, content, name, nil)
 			expect( job.id ).to be == id
@@ -48,14 +48,14 @@ describe Job do
 		end
 	end
 
-	describe :get do
+	describe '#get' do
 		it 'should read the job' do
 			job = Job::create(path, id, content, name, nil)
 			expect( Job::get(path) ).to eql(job)
 		end
 	end
 
-	describe :purge do
+	describe '#purge' do
 		it 'should clean up everything' do
 			job = Job::create(path, id, content, name, nil)
 			job.purge
@@ -70,7 +70,7 @@ describe Job do
 		end
 	end
 
-	describe :to_json do
+	describe '#to_json' do
 		it 'should render proper JSON' do
 			job = Job::create(path, id, content, name, nil)
 			expect( job.to_json ).to be_a(String)
@@ -86,7 +86,7 @@ describe Job do
 		end
 	end
 
-	describe :convert= do
+	describe '#convert=' do
 		it 'should update date stamp but not status' do
 			job = Job::create(path, id, content, name, nil)
 			expect{ job.convert = true }.to change(job, :updated)
@@ -96,7 +96,7 @@ describe Job do
 		end
 	end
 
-	describe :convert do
+	describe '#convert' do
 		it 'should convert the file' do
 			job = Job::create(path, id, content, name, false)
 			# mock the converter because this test is not for actual conversion
@@ -107,7 +107,7 @@ describe Job do
 		end
 	end
 
-	describe :print do
+	describe '#print' do
 		it 'should print without conversion' do
 			job = Job::create(path, id, content, name, false)
 			# mock the plotter since we don't want to have a hardware dependency
@@ -120,7 +120,7 @@ describe Job do
 		end
 	end
 
-	describe :mail do
+	describe '#mail' do
 		it 'should mark job as mailed' do
 			job = Job::create(path, id, content, name, false)
 			expect{ job.mail }.to change(job, :updated).and change(job, :status)

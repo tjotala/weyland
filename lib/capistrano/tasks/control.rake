@@ -5,8 +5,11 @@ namespace :deploy do
 	desc "Install fonts"
 	task :install_fonts do
 		on roles(:all) do |host|
-			sudo "find", "#{fetch(:deploy_to)}/current/fonts -iname '*.zip' -print0 | xargs -0 -i sudo unzip -o -j '{}' '*.ttf' -d /usr/local/share/fonts"
-			sudo "find", "#{fetch(:deploy_to)}/current/fonts -iname '*.ttf' -print0 | xargs -0 -i sudo cp -vf '{}' /usr/local/share/fonts"
+			src_font_path = "#{fetch(:deploy_to)}/current/fonts"
+			tgt_font_path = '~/.fonts'
+			execute "mkdir", "-p #{tgt_font_path}"
+			execute "find", "#{src_font_path} -iname '*.zip' -print0 | xargs -0 -i unzip -o -j '{}' '*.ttf' -d #{tgt_font_path}"
+			execute "find", "#{src_font_path} -iname '*.ttf' -print0 | xargs -0 -i cp -vf '{}' #{tgt_font_path}"
 		end
 	end
 
