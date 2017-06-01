@@ -109,7 +109,7 @@ namespace :deploy do
 		task :setup do
 			run_locally do
 				execute "brew", "install nginx" # this barfs due to gems
-				execute "ln", "-svf #{Dir.pwd}/config/weyland.conf /usr/local/etc/nginx/servers/weyland.conf"
+				execute "ln", "-svf #{Dir.pwd}/config/nginx/pi.conf /usr/local/etc/nginx/servers/weyland.conf"
 			end
 		end
 

@@ -18,7 +18,8 @@ namespace :deploy do
 	desc "Start server"
 	task :start do
 		on roles(:all) do |host|
-			sudo "ln", "-svf #{fetch(:deploy_to)}/current/config/weyland.conf /etc/nginx/sites-enabled/weyland"
+			sudo "rm", "-rf /etc/nginx/sites-enabled/weyland" # remove old name
+			sudo "ln", "-svf #{fetch(:deploy_to)}/current/config/nginx/pi.conf /etc/nginx/sites-enabled/weyland.conf"
 			sudo "service", "nginx restart"
 			execute "bash", "#{fetch(:deploy_to)}/current/bin/run.sh"
 		end
