@@ -1,6 +1,7 @@
 module Platform
 	require 'open3'
 
+	CONFIG_PATH = File.join(File::SEPARATOR, 'usr', 'local', 'etc').freeze
 	FONT_PATH = File.expand_path(File.join('~', 'Library', 'Fonts')).freeze
 	SHARED_PATH = File.expand_path(File.join(ROOT_PATH, '..', 'shared')).freeze
 	QUEUE_PATH = File.expand_path(File.join(SHARED_PATH, 'queue')).freeze

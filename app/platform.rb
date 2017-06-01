@@ -4,10 +4,9 @@ module Platform
 	ROOT_PATH = File.expand_path(File.dirname(__FILE__)).freeze
 	LIB_PATH = File.expand_path(File.join(ROOT_PATH, 'lib')).freeze
 	BIN_PATH = File.expand_path(File.join(ROOT_PATH, '..', 'bin')).freeze
-	CONFIG_PATH = File.expand_path(File.join(ROOT_PATH, '..', 'config')).freeze
 	PUBLIC_PATH = File.expand_path(File.join(ROOT_PATH, '..', 'public')).freeze
 
-	PRODUCT_CONFIG = (YAML.load(File.read(File.join(CONFIG_PATH, 'product.yaml'))) rescue { }).freeze
+	PRODUCT_CONFIG = (YAML.load(File.read(File.join(CONFIG_PATH, 'weyland.conf'))) rescue { }).freeze
 
 	COMPANY_NAME = (PRODUCT_CONFIG['company_name'] || '').freeze
 	PRODUCT_NAME = (PRODUCT_CONFIG['product_name'] || 'Weyland').freeze

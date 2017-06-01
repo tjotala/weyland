@@ -135,7 +135,9 @@ class Server < Sinatra::Base
 
 		def config
 			{
-				product: Platform::PRODUCT_FULLNAME,
+				company: Platform::COMPANY_NAME,
+				product: Platform::PRODUCT_NAME,
+				version: Platform::PRODUCT_VERSION,
 				platform: Platform::name,
 				environment: settings.environment,
 				time: Time.now.utc.iso8601,
