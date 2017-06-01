@@ -398,6 +398,8 @@ paths:
               description: "Last modified date/time of the print job"
               type: string
               example: "Tue, 30 May 2017 23:11:54 GMT"
+        404:
+          description: "no such print job"
 
     delete:
       operationId: DeletePrintJob
@@ -418,6 +420,8 @@ paths:
               description: "Last modified date/time of the print job"
               type: string
               example: "Tue, 30 May 2017 23:11:54 GMT"
+        404:
+          description: "no such print job"
 
   /v1/jobs/{job_id}/contents/{content_id}:
     get:
@@ -442,6 +446,8 @@ paths:
               description: "Tells the browser whether to render the content inline, or download as attachment"
               type: string
               example: "inline"
+        404:
+          description: "no such print job or content"
 
   /v1/jobs/{job_id}/print:
     post:
@@ -469,6 +475,8 @@ paths:
               description: "Last modified date/time of the print job"
               type: string
               example: "Tue, 30 May 2017 23:11:54 GMT"
+        404:
+          description: "no such print job"
         409:
           description: "print job is already printing"
         429:
@@ -499,6 +507,8 @@ paths:
               description: "Last modified date/time of the print job"
               type: string
               example: "Tue, 30 May 2017 23:11:54 GMT"
+        404:
+          description: "no such print job"
         409:
           description: "print job failed to print, or has not yet been printed, or was already mailed"
 
