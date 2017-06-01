@@ -115,11 +115,11 @@ namespace :deploy do
 		desc "Confgure nginx"
 		task :setup do
 			run_locally do
-				root_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..'))
-				sudo "mkdir", "-p /var/weyland"
-				sudo "chown", "`whoami` /var/weyland"
+				root_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+				sudo "mkdir", "-pv /var/weyland"
+				sudo "chown", "-v `whoami` /var/weyland"
 				execute "ln", "-svfh #{root_path} /var/weyland/current"
-				execute "mkdir", "-p /var/weyland/shared/{queue,logs}"
+				execute "mkdir", "-pv /var/weyland/shared/{queue,logs}"
 				sudo "ln", "-svf /var/weyland/current/config/nginx/pi.conf /usr/local/etc/nginx/servers/weyland.conf"
 			end
 		end
