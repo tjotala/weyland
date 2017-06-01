@@ -66,7 +66,7 @@ describe Server do
 			{ name: 'foo.ttf', content: SecureRandom.random_bytes(256) },
 			{ name: 'bar.ttf', content: SecureRandom.random_bytes(256) },
 		] }
-		let(:font_list) { fonts.map { |font| { 'name' => font[:name] } } }
+		let(:font_list) { fonts.map { |font| { 'name' => font[:name], 'size' => font[:content].size } } }
 
 		context "with bad input" do
 			BAD_NAMES = [ '...evil..', '.,;:=', 'bogus.otf' ]
