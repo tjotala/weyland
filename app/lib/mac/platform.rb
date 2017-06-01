@@ -3,9 +3,9 @@ module Platform
 
 	CONFIG_PATH = File.join(File::SEPARATOR, 'usr', 'local', 'etc').freeze
 	FONT_PATH = File.expand_path(File.join('~', 'Library', 'Fonts')).freeze
-	SHARED_PATH = File.expand_path(File.join(ROOT_PATH, '..', 'shared')).freeze
-	QUEUE_PATH = File.expand_path(File.join(SHARED_PATH, 'queue')).freeze
-	LOGS_PATH = File.expand_path(File.join(SHARED_PATH, 'logs')).freeze
+	SHARED_PATH = File.join(File::SEPARATOR, 'var', 'weyland', 'shared').freeze
+	QUEUE_PATH = File.join(SHARED_PATH, 'queue').freeze
+	LOGS_PATH = File.join(SHARED_PATH, 'logs').freeze
 
 	def self.name
 		%x[uname -a].chomp.strip

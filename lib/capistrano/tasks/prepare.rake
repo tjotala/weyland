@@ -105,18 +105,29 @@ namespace :deploy do
 	end
 
 	namespace :local do
-		desc "Confgure OS X to develop locally"
-		task :setup do
+		desc "Install nginx"
+		task :install do
 			run_locally do
 				execute "brew", "install nginx" # this barfs due to gems
-				execute "ln", "-svf #{Dir.pwd}/config/nginx/pi.conf /usr/local/etc/nginx/servers/weyland.conf"
+			end
+		end
+
+		desc "Confgure nginx"
+		task :setup do
+			run_locally do
+				root_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..'))
+				sudo "mkdir", "-p /var/weyland"
+				sudo "chown", "`whoami` /var/weyland"
+				execute "ln", "-svfh #{root_path} /var/weyland/current"
+				execute "mkdir", "-p /var/weyland/shared/{queue,logs}"
+				sudo "ln", "-svf /var/weyland/current/config/nginx/pi.conf /usr/local/etc/nginx/servers/weyland.conf"
 			end
 		end
 
 		desc "Start nginx"
 		task :start do
 			run_locally do
-				sudo "nginx"
+				sudo "nginx", "-c /var/weyland/current/config/nginx/mac.conf"
 			end
 		end
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pid_file=./shared/weyland.pid
+pid_file=/var/weyland/shared/weyland.pid
 if [ -f $pid_file ]; then
   echo killing old server $(cat $pid_file)
   kill $(cat $pid_file)
