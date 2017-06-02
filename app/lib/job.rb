@@ -74,9 +74,10 @@ class Job
 		File.write(conversion_log_name, conversion_log)
 		conflicted_resource('conversion failed') if conversion_log =~ /error/m
 		save(STATUS_CONVERTED)
-	rescue
+	rescue Exception => e
 		save(STATUS_FAILED)
 		$stderr.puts "failed to convert, reason: #{e.message}"
+		raise e
 	end
 
 	def print(converter, plotter)
@@ -93,7 +94,7 @@ class Job
 		plotter.pen(:up)
 		plotter.home
 		true
-	rescue
+	rescue Exception => e
 		save(STATUS_FAILED)
 		$stderr.puts "failed to print, reason: #{e.message}"
 		false
@@ -118,8 +119,8 @@ class Job
 			id: @id,
 			name: @name,
 			size: @size,
-			created: @created.utc.iso8601,
-			updated: @updated.utc.iso8601,
+			created: @created.utc.iso8601(9),
+			updated: @updated.utc.iso8601(9),
 			status: @status,
 			convert: @convert,
 			printable: printable?,
@@ -181,7 +182,7 @@ class Job
 			File.join(path, 'job.json')
 		end
 
-		def create(path, id, content, name, convert)
+		def create(path, id, content, name, convert = nil)
 			FileUtils.mkdir(path)
 			job = Job.new(path: path, id: id, name: name, size: content.bytesize, convert: convert).save
 			File.write(job.original_content_name, content)

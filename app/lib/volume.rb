@@ -1,4 +1,5 @@
 require 'errors'
+require 'sys/filesystem'
 
 class Volume
 	attr_reader :id # required

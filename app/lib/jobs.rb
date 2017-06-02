@@ -78,6 +78,7 @@ class Jobs
 
 	def clear
 		list.each { |job| job.purge }
+		self
 	end
 
 	def stop
@@ -103,7 +104,7 @@ class Jobs
 
 	class << self
 		def valid_id?(id)
-			id =~ /^\h+$/
+			id =~ /^\h{16}$/
 		end
 
 		def validate(id)

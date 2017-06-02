@@ -140,7 +140,7 @@ class Server < Sinatra::Base
 				version: Platform::PRODUCT_VERSION,
 				platform: Platform::name,
 				environment: settings.environment,
-				time: Time.now.utc.iso8601,
+				time: Time.now.utc.iso8601(9),
 				total_space: settings.jobs.volume.total_space,
 				available_space: settings.jobs.volume.available_space,
 				converter: settings.jobs.converter.version,

@@ -1,4 +1,5 @@
 require 'rack/test'
+require 'rspec/wait'
 require 'pp' # hokey fix from https://github.com/fakefs/fakefs#fakefs-----typeerror-superclass-mismatch-for-class-file
 require 'fakefs/spec_helpers'
 require 'securerandom'

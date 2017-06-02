@@ -9,6 +9,7 @@ gem 'rack'
 gem 'tilt', '~> 1.4.1'
 gem 'haml'
 gem 'promise'
+gem 'sys-filesystem'
 
 # deployment tools
 group :development, :test do
@@ -18,7 +19,10 @@ end
 
 group :test do
 	gem 'rake'
+	gem 'autotest-standalone'
 	gem 'rspec'
+	gem 'rspec-autotest'
+	gem 'rspec-wait'
 	gem 'fakefs'
 	gem 'rack-test'
 end

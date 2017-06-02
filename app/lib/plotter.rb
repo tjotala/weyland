@@ -1,7 +1,7 @@
 class Plotter
-	BASE_PATH = File.expand_path(File.join(Platform::BIN_PATH, 'axidraw_standalone')).freeze
-	TOOL_PATH = File.expand_path(File.join(BASE_PATH, 'axicli.py')).freeze
-	SAMPLE_PATH = File.expand_path(File.join(BASE_PATH, 'AxiDraw_trivial.svg')).freeze
+	BASE_PATH = File.join(Platform::BIN_PATH, 'axidraw_standalone').freeze
+	TOOL_PATH = File.join(BASE_PATH, 'axicli.py').freeze
+	SAMPLE_PATH = File.join(BASE_PATH, 'AxiDraw_trivial.svg').freeze
 
 	def version
 		ver = manual('version-check')

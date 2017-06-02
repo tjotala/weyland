@@ -10,14 +10,10 @@ class RemovableVolume < Volume
 	end
 
 	def base_path
-		# TODO
+		Sys::Filesystem.mount_point(@path)
 	end
 
 	class << self
-		def parse(vol)
-			# TODO
-		end
-
 		def list
 			# TODO
 		end
@@ -31,22 +27,15 @@ class RemovableVolume < Volume
 		end
 
 		def get_file_system(path)
-			# TODO
+			Sys::Filesystem.stat(path).base_type
 		end
 
 		def get_total_space(path)
-			get_space(path)[:total]
+			Sys::Filesystem.stat(path).bytes_total
 		end
 
 		def get_available_space(path)
-			get_space(path)[:available]
-		end
-
-		private
-
-		def get_space(path)
-			df = %x[df -k #{path}].lines[1].chomp.split
-			{ total: df[3].to_i, available: df[2].to_i }
+			Sys::Filesystem.stat(path).bytes_free
 		end
 	end
 end

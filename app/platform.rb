@@ -1,8 +1,8 @@
 module Platform
-	ROOT_PATH = File.expand_path(File.dirname(__FILE__)).freeze
-	LIB_PATH = File.expand_path(File.join(ROOT_PATH, 'lib')).freeze
-	BIN_PATH = File.expand_path(File.join(ROOT_PATH, '..', 'bin')).freeze
-	PUBLIC_PATH = File.expand_path(File.join(ROOT_PATH, '..', 'public')).freeze
+	ROOT_PATH = File.dirname(File.expand_path(__FILE__)).freeze
+	LIB_PATH = File.join(ROOT_PATH, 'lib').freeze
+	BIN_PATH = File.join(ROOT_PATH, '..', 'bin').freeze
+	PUBLIC_PATH = File.join(ROOT_PATH, '..', 'public').freeze
 
 	PLATFORM_TYPE_PI = 'pi'.freeze
 	PLATFORM_TYPE_MAC = 'mac'.freeze
