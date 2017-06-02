@@ -58,3 +58,7 @@ end
 def invalid_argument(arg, reason)
 	raise ArgumentError, "invalid #{arg}: #{reason}"
 end
+
+def assert(&block)
+	raise InternalError unless yield
+end

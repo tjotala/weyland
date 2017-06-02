@@ -27,6 +27,10 @@ end
 require File.join(Platform::PLATFORM_PATH, 'platform.rb')
 
 module Platform
+	LOGS_PATH = File.join(SHARED_PATH, 'logs').freeze
+	USERS_PATH = File.join(SHARED_PATH, 'users').freeze
+	QUEUE_PATH = File.join(SHARED_PATH, 'queue').freeze
+
 	require 'yaml'
 
 	PRODUCT_CONFIG = (YAML.load(File.read(File.join(CONFIG_PATH, 'weyland.conf'))) rescue { }).freeze
@@ -37,3 +41,11 @@ module Platform
 	PRODUCT_LOGO = (PRODUCT_CONFIG['product_logo'] || nil).freeze
 	PRODUCT_FULLNAME = "#{PRODUCT_NAME}/#{PRODUCT_VERSION}".freeze
 end
+
+puts "CONFIG_PATH = #{Platform::CONFIG_PATH}"
+puts "FONT_PATH = #{Platform::FONT_PATH}"
+puts "ROOT_PATH = #{Platform::ROOT_PATH}"
+puts "SHARED_PATH = #{Platform::SHARED_PATH}"
+puts "LOGS_PATH = #{Platform::LOGS_PATH}"
+puts "USERS_PATH = #{Platform::USERS_PATH}"
+puts "QUEUE_PATH = #{Platform::QUEUE_PATH}"
