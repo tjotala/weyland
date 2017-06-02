@@ -4,8 +4,6 @@ module Platform
 	CONFIG_PATH = File.join(File::SEPARATOR, 'etc').freeze
 	FONT_PATH = File.expand_path(File.join('~', '.fonts')).freeze
 	SHARED_PATH = File.join(File::SEPARATOR, 'var', 'weyland', 'shared').freeze
-	QUEUE_PATH = File.join(SHARED_PATH, 'queue').freeze
-	LOGS_PATH = File.join(SHARED_PATH, 'logs').freeze
 
 	def self.name
 		%x[uname -a].chomp.strip

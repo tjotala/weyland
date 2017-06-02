@@ -99,8 +99,9 @@ RSpec.configure do |config|
 		FakeFS.activate!
 		FileUtils.mkdir_p(Platform::FONT_PATH)
 		FileUtils.mkdir_p(Platform::SHARED_PATH)
-		FileUtils.mkdir_p(Platform::QUEUE_PATH)
 		FileUtils.mkdir_p(Platform::LOGS_PATH)
+		FileUtils.mkdir_p(Platform::USERS_PATH)
+		FileUtils.mkdir_p(Platform::QUEUE_PATH)
 
 		ex.run
 

@@ -66,7 +66,7 @@ namespace :deploy do
 			on roles(:all) do |host|
 				sudo "mkdir", "-vp #{fetch(:deploy_to)}"
 				sudo "chown", "#{fetch(:user)} #{fetch(:deploy_to)}"
-				execute "mkdir", "-vp #{fetch(:deploy_to)}/shared/{logs,queue}"
+				execute "mkdir", "-vp #{fetch(:deploy_to)}/shared/{logs,users,queue}"
 			end
 		end
 
@@ -119,7 +119,7 @@ namespace :deploy do
 				sudo "mkdir", "-pv /var/weyland"
 				sudo "chown", "-v `whoami` /var/weyland"
 				execute "ln", "-svfh #{root_path} /var/weyland/current"
-				execute "mkdir", "-pv /var/weyland/shared/{queue,logs}"
+				execute "mkdir", "-pv /var/weyland/shared/{logs,users,queue}"
 				sudo "ln", "-svf /var/weyland/current/config/nginx/pi.conf /usr/local/etc/nginx/servers/weyland.conf"
 			end
 		end
