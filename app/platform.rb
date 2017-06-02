@@ -1,8 +1,9 @@
 module Platform
 	ROOT_PATH = File.dirname(File.expand_path(__FILE__)).freeze
-	LIB_PATH = File.join(ROOT_PATH, 'lib').freeze
 	BIN_PATH = File.join(ROOT_PATH, '..', 'bin').freeze
 	PUBLIC_PATH = File.join(ROOT_PATH, '..', 'public').freeze
+	MODEL_PATH = File.join(ROOT_PATH, 'models').freeze
+	VIEW_PATH = File.join(ROOT_PATH, 'views').freeze
 
 	PLATFORM_TYPE_PI = 'pi'.freeze
 	PLATFORM_TYPE_MAC = 'mac'.freeze
@@ -19,8 +20,8 @@ module Platform
 		raise "unsupported platform: #{RUBY_PLATFORM}"
 	end
 
-	PLATFORM_PATH = File.join(LIB_PATH, PLATFORM_TYPE).freeze
-	$LOAD_PATH.unshift(Platform::LIB_PATH, Platform::PLATFORM_PATH)
+	PLATFORM_PATH = File.join(ROOT_PATH, 'platforms', PLATFORM_TYPE).freeze
+	$LOAD_PATH.unshift(Platform::MODEL_PATH, Platform::PLATFORM_PATH, Platform::ROOT_PATH)
 end
 
 require File.join(Platform::PLATFORM_PATH, 'platform.rb')

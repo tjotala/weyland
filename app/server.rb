@@ -2,17 +2,11 @@ require 'rubygems'
 require 'bundler/setup'
 require 'sinatra/base'
 require 'sinatra/json'
-#require 'sinatra/swagger'
 require 'logger'
 require 'haml'
 require 'json'
 
-require 'errors'
-require 'queue_volume'
-require 'jobs'
-require 'converter'
-require 'plotter'
-require 'fonts'
+Dir[File.join(Platform::MODEL_PATH, '**', '*.rb')].each { |f| require f }
 
 module Http
 	module Headers
@@ -34,11 +28,6 @@ module MimeTypes
 end
 
 class Server < Sinatra::Base
-	#register Sinatra::Swagger::RecommendedSetup
-	#register Sinatra::Swagger::SpecVerb
-	#register Sinatra::Swagger::VersionHeader
-	#swagger File.join(Platform::LIB_PATH, 'weyland.yaml')
-
 	::Logger.class_eval { alias :write :'<<' }
 	access_logger = ::Logger.new(::File.join(Platform::LOGS_PATH, 'access.log'))
 	error_logger = ::File.new(::File.join(Platform::LOGS_PATH, 'error.log'), 'a+')
@@ -56,6 +45,7 @@ class Server < Sinatra::Base
 
 	configure do
 		set :root, Platform::ROOT_PATH
+		set :views, Platform::VIEW_PATH
 		set :port, 8080
 		set :public_folder, Platform::PUBLIC_PATH
 		set :protection, :except => [ :http_origin ]
