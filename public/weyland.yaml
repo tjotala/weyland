@@ -75,10 +75,20 @@ parameters:
     name: font_id
     description: >
       Font name.
-      May only contain alphanumeric characters and end in `.ttf`."
+      May only contain alphanumeric characters and end in `.ttf`.
     required: true
     type: string
     example: "Arial.ttf"
+
+  username:
+    in: path
+    name: username
+    description: >
+      Email address of the user.
+      May only contain any valid characters for an email address, but they must be properly encoded to pass in URL.
+    required: true
+    type: string
+    example: "peter.weyland@example.com"
 
   user_credentials:
     in: body
@@ -264,32 +274,34 @@ definitions:
     items:
       $ref: "#/definitions/font"
 
-  username:
-    title: Username
-    type: string
-    example: "peter.weyland@example.com"
-
   user:
     title: User profile
     description: >
       User profile, excluding password
     type: object
     properties:
+      id:
+        description: >
+          Immutable user ID
+        type: string
+        example: "beee9cbf-7a89-4bcf-95a7-7a3d6bdcc99c"
       username:
         description: >
           User name (non-empty string)
         type: string
         example: "peter.weyland"
-      first_name:
+      modified:
         description: >
-          First name
+          Date/time when the user profile was last modified
         type: string
-        example: "Peter"
-      last_name:
+        format: date-time
+        example: "2017-05-31T18:25:05Z"
+      loggedin:
         description: >
-          Last name
+          Date/time when the user last logged in
         type: string
-        example: "Weyland"
+        format: date-time
+        example: "2017-05-31T18:25:09Z"
       role:
         description: >
           User role
@@ -301,6 +313,8 @@ definitions:
         example: "user"
     required:
       - username
+      - modified
+      - loggedin
       - role
 
   user_credentials:
@@ -313,11 +327,12 @@ definitions:
         description: >
           User name (non-empty string)
         type: string
-        example: "peter.weyland"
+        example: "peter.weyland@example.com"
       password:
         description: >
           Password (non-empty string)
         type: string
+        format: password
         example: "3yk1/t/2SK"
     required:
       - username
