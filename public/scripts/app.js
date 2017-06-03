@@ -94,6 +94,12 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, 
     });
   };
 
+  $scope.mail = function(job) {
+    $http.post('/v1/jobs/' + job.id + '/mail').then(r => {
+      $scope.refresh();
+    });
+  };
+
   $scope.clear = function() {
     $http.delete('/v1/jobs').then(r => {
       $scope.refresh();
