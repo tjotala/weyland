@@ -80,15 +80,6 @@ parameters:
     type: string
     example: "Arial.ttf"
 
-  new_print_job:
-    in: body
-    name: new_print_job
-    description: >
-      New print job
-    required: true
-    schema:
-      $ref: "#/definitions/new_print_job"
-
   user_credentials:
     in: body
     name: user_credentials
@@ -273,6 +264,11 @@ definitions:
     items:
       $ref: "#/definitions/font"
 
+  username:
+    title: Username
+    type: string
+    example: "peter.weyland@example.com"
+
   user:
     title: User profile
     description: >
@@ -362,6 +358,10 @@ tags:
     description: Print Job APIs
   - name: Fonts
     description: Font APIs
+  - name: Auth
+    description: Authentication and Authorization APIs
+  - name: User
+    description: User Profile APIs
 
 paths:
   /v1/config:
@@ -479,7 +479,15 @@ paths:
       tags:
         - Jobs
       parameters:
-        - $ref: "#/parameters/new_print_job"
+        - name: new_print_job
+          in: body
+          description: >
+            New print job
+          required: true
+          schema:
+            $ref: "#/definitions/new_print_job"
+      consumes:
+        - "application/json"
       produces:
         - "application/json"
       responses:
@@ -531,7 +539,7 @@ paths:
               type: string
               example: "Tue, 30 May 2017 23:11:54 GMT"
         404:
-          description: "no such print job"
+          description: "No such print job"
 
     delete:
       operationId: DeletePrintJob
@@ -553,7 +561,7 @@ paths:
               type: string
               example: "Tue, 30 May 2017 23:11:54 GMT"
         404:
-          description: "no such print job"
+          description: "No such print job"
 
   /v1/jobs/{job_id}/contents/{content_id}:
     get:
@@ -579,7 +587,7 @@ paths:
               type: string
               example: "inline"
         404:
-          description: "no such print job or content"
+          description: "No such print job or content"
 
   /v1/jobs/{job_id}/print:
     post:
@@ -610,11 +618,11 @@ paths:
               type: string
               example: "Tue, 30 May 2017 23:11:54 GMT"
         404:
-          description: "no such print job"
+          description: "No such print job"
         409:
-          description: "print job is already printing"
+          description: "Print job is already printing"
         429:
-          description: "another print job is already printing"
+          description: "Another print job is already printing"
 
   /v1/jobs/{job_id}/mail:
     post:
@@ -643,9 +651,9 @@ paths:
               type: string
               example: "Tue, 30 May 2017 23:11:54 GMT"
         404:
-          description: "no such print job"
+          description: "No such print job"
         409:
-          description: "print job failed to print, or has not yet been printed, or was already mailed"
+          description: "Print job failed to print, or has not yet been printed, or was already mailed"
 
   /v1/fonts:
     get:
@@ -690,9 +698,9 @@ paths:
               type: string
               example: "inline"
         400:
-          description: "bad request (malformed name)"
+          description: "Bad request (malformed name)"
         404:
-          description: "no such font"
+          description: "No such font"
     put:
       operationId: InstallFont
       summary: "Install New Font"
@@ -702,11 +710,13 @@ paths:
         This only includes custom fonts, not stock system fonts.
       tags:
         - Fonts
+      consumes:
+        - "application/font-sfnt"
       responses:
         204:
           description: "OK"
         400:
-          description: "bad request (malformed name)"
+          description: "Bad request (malformed name)"
     delete:
       operationId: RemoveFont
       summary: "Remove Installed Font"
@@ -719,20 +729,22 @@ paths:
         204:
           description: "OK"
         400:
-          description: "bad request (malformed name)"
+          description: "Bad request (malformed name)"
         404:
-          description: "no such font"
+          description: "No such font"
 
   /v1/auth/login:
     post:
       operationId: Login
-      summary: "Login"
+      summary: "Login with username and password"
       description: >
         Authenticate with username and password.
       tags:
         - Auth
       parameters:
         - $ref: "#/parameters/user_credentials"
+      consumes:
+        - "application/json"
       produces:
         - "application/json"
       responses:
@@ -746,7 +758,7 @@ paths:
               type: string
               example: "WeylandToken=RkZ0OUo3Y3ZJS1hqOEF0VWFKeG5WQzdERjdiZThpbHJGbmRIQmJ1eWZUdz0K"
         401:
-          description: "no such username or password"
+          description: "No such username or password"
           headers:
             Set-Cookie:
               description: "Expired authentication token"
@@ -755,7 +767,7 @@ paths:
   /v1/auth/authorize:
     post:
       operationId: Authorize
-      summary: "Authorize"
+      summary: "Authorize with external token"
       description: >
         Authenticate with token issued by an external identity management system (IMS).
         The external system and environment must have been previously registered with Weyland.
@@ -763,6 +775,8 @@ paths:
         - Auth
       parameters:
         - $ref: "#/parameters/auth_credentials"
+      consumes:
+        - "application/json"
       produces:
         - "application/json"
       responses:
@@ -776,14 +790,14 @@ paths:
               type: string
               example: "WeylandToken=RkZ0OUo3Y3ZJS1hqOEF0VWFKeG5WQzdERjdiZThpbHJGbmRIQmJ1eWZUdz0K"
         401:
-          description: "no such external system or environment"
+          description: "No such external system or environment"
           headers:
             Set-Cookie:
               description: "Expired authentication token"
               type: string
               example: "WeylandToken=DeadMenTellNoTales; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
         403:
-          description: "external IMS rejected token"
+          description: "External IMS rejected token"
           headers:
             Set-Cookie:
               description: "Expired authentication token"
@@ -806,3 +820,47 @@ paths:
               description: "Expired authentication token"
               type: string
               example: "WeylandToken=DeadMenTellNoTales; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+
+  /v1/users/{username}:
+    put:
+      operationId: CreateNewUser
+      summary: "Create new user profile"
+      description: >
+        Creates a new user profile with username and password.
+      tags:
+        - User
+      parameters:
+        - $ref: "#/parameters/username"
+        - $ref: "#/parameters/new_user"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/user"
+          headers:
+            Set-Cookie:
+              description: "Authorization token as a session cookie"
+              type: string
+              example: "WeylandToken=RkZ0OUo3Y3ZJS1hqOEF0VWFKeG5WQzdERjdiZThpbHJGbmRIQmJ1eWZUdz0K"
+        403:
+          description: "Username already exists"
+    delete:
+      operationId: DeleteUser
+      summary: "Delete a user profile"
+      description: >
+        Deletes an existing user profile.
+      tags:
+        - User
+      parameters:
+        - $ref: "#/parameters/username"
+      produces:
+        - "application/json"
+      responses:
+        204:
+          description: "No content"
+        403:
+          description: "Forbidden (not user or admin)"
