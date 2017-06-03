@@ -73,7 +73,7 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, 
     $uibModal.open({
       animation: true,
       templateUrl: '/view',
-      size: 'lg',
+      windowClass: 'weyland-modal-popup',
       controller: [ '$scope', 'uibButtonConfig', function($scope, buttonConfig) {
         buttonConfig.activeClass = 'btn-success';
         $scope.job = job;
