@@ -25,16 +25,11 @@
 					%table.table.table-striped
 						%thead
 							%tr
-								%th #
-								%th Name
-								%th Created
-								%th Size
-								%th Convert?
-								%th Status
-								%th Updated
-								%th Actions
+								%th{'ng-repeat' => "col in columns", 'ng-attr-role' => "{{col.key ? 'button' : undefined}}", 'ng-click' => "sort(col.key)"}
+									{{col.title}}
+									%i.fa{'ng-if' => 'col.key', 'ng-show' => "sort_key === col.key", 'ng-class' => 'sort_class()'}
 						%tbody
-							%tr{'ng-repeat' => 'job in jobs track by job.id'}
+							%tr{'ng-repeat' => "job in jobs | orderBy: sort_key: sort_reverse track by job.id"}
 								%td{:title => '{{job.id}}'} {{$index + 1}}
 								%td {{job.name}}
 								%td{'am-time-ago' => 'job.created | amParse', :title => '{{job.created}}'}

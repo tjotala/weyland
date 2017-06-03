@@ -9,7 +9,7 @@
         %label.btn.btn-primary{'ng-model' => 'content_id', 'uib-btn-radio' => 'content_conversion_log'} {{content_name(content_conversion_log)}}
         %label.btn.btn-primary{'ng-model' => 'content_id', 'uib-btn-radio' => 'content_print_log'} {{content_name(content_print_log)}}
     %div.btn-group
-        %a.btn.btn-success{:role => 'button', :href => '{{download_link()}}'}
+        %a.btn.btn-success{:role => 'button', 'ng-href' => '{{download_link()}}'}
             %i.fa.fa-download
             Download
     %div

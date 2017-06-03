@@ -35,6 +35,18 @@ weylandApp.controller('weylandPrinterCtrl', function($scope, $http) {
 weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, $interval, $uibModal) {
   $scope.loading = false;
   $scope.jobs = [ ];
+  $scope.columns = [
+    { title: '#' },
+    { title: 'Name', key: 'name' },
+    { title: 'Created', key: 'created' },
+    { title: 'Size', key: 'size' },
+    { title: 'Convert?' },
+    { title: 'Status', key: 'status' },
+    { title: 'Updated', key: 'updated' },
+    { title: 'Actions' },
+  ];
+  $scope.sort_key = 'created';
+  $scope.sort_reverse = true;
 
   $scope.refresh = function() {
     $scope.loading = true;
@@ -45,6 +57,16 @@ weylandApp.controller('weylandJobsCtrl', function($scope, $log, $window, $http, 
     }).finally(function() {
       $scope.loading = false;
     });
+  };
+
+  $scope.sort = function(key) {
+    if (key == undefined) return;
+    $scope.sort_reverse = ($scope.sort_key === key) ? !$scope.sort_reverse : false;
+    $scope.sort_key = key;
+  };
+
+  $scope.sort_class = function() {
+    return $scope.sort_reverse ? 'fa-sort-up' : 'fa-sort-down';
   };
 
   $scope.view = function(job) {
