@@ -70,6 +70,13 @@ namespace :deploy do
 			end
 		end
 
+		desc "Create self-signed certificate for SSL"
+		task :cert do
+			on roles(:all) do |host|
+				execute "openssl", "req -x509 -nodes -days 365 -newkey rsa:2048 -keyout #{fetch(:deploy_to)}/shared/weyland.key -subj \"/C=US/ST=Denial/L=Anytown/O=Weyland-Yutani Corp/CN=Peter Weyland\" -out #{fetch(:deploy_to)}/shared/weyland.crt"
+			end
+		end
+
 		desc "Install Inkscape 0.92"
 		task :inkscape do
 			on roles(:all) do |host|
@@ -105,6 +112,8 @@ namespace :deploy do
 	end
 
 	namespace :local do
+		local_deploy_path = '/var/weyland'
+
 		desc "Install nginx"
 		task :install do
 			run_locally do
@@ -116,18 +125,19 @@ namespace :deploy do
 		task :setup do
 			run_locally do
 				root_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
-				sudo "mkdir", "-pv /var/weyland"
-				sudo "chown", "-v `whoami` /var/weyland"
-				execute "ln", "-svfh #{root_path} /var/weyland/current"
-				execute "mkdir", "-pv /var/weyland/shared/{logs,users,queue}"
-				sudo "ln", "-svf /var/weyland/current/config/nginx/pi.conf /usr/local/etc/nginx/servers/weyland.conf"
+				sudo "mkdir", "-pv #{local_deploy_path}"
+				sudo "chown", "-v `whoami` #{local_deploy_path}"
+				execute "ln", "-svfh #{root_path} #{local_deploy_path}/current"
+				execute "mkdir", "-pv #{local_deploy_path}/shared/{logs,users,queue}"
+				sudo "ln", "-svf #{local_deploy_path}/current/config/nginx/pi.conf /usr/local/etc/nginx/servers/weyland.conf"
+				execute "openssl", "req -x509 -nodes -days 365 -newkey rsa:2048 -keyout #{local_deploy_path}/shared/weyland.key -subj \"/C=US/ST=Denial/L=Anytown/O=Weyland-Yutani Corp/CN=Peter Weyland\" -out #{local_deploy_path}/shared/weyland.crt"
 			end
 		end
 
 		desc "Start nginx"
 		task :start do
 			run_locally do
-				sudo "nginx", "-c /var/weyland/current/config/nginx/mac.conf"
+				sudo "nginx", "-c #{local_deploy_path}/current/config/nginx/mac.conf"
 			end
 		end
 
