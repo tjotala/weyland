@@ -21,7 +21,9 @@ parameters:
   job_id:
     in: path
     name: job_id
-    description: "Unique ID that identifies each print job. Consists of 16 hex digits."
+    description: >
+      Unique ID that identifies each print job.
+      Consists of 16 hex digits.
     required: true
     type: string
     format: binary
@@ -29,7 +31,9 @@ parameters:
 
   convert:
     in: query
-    description: "Convert text to paths with Inkscape (overrides original request). Default is false."
+    description: >
+      Convert text to paths with Inkscape (overrides original request).
+      Default is false.
     name: convert
     type: boolean
     required: false
@@ -56,7 +60,10 @@ parameters:
 
   download:
     in: query
-    description: "Controls what is returned as the Content-Disposition header value. If true, returns `attachment` with a filename. If false, returns `inline`. Default is false."
+    description: >
+      Controls what is returned as the Content-Disposition header value.
+      If true, returns `attachment` with a filename.
+      If false, returns `inline`. Default is false."
     name: download
     type: boolean
     required: false
@@ -66,7 +73,9 @@ parameters:
   font_id:
     in: path
     name: font_id
-    description: "Font name. May only contain alphanumeric characters and end in `.ttf`."
+    description: >
+      Font name.
+      May only contain alphanumeric characters and end in `.ttf`."
     required: true
     type: string
     example: "Arial.ttf"
@@ -74,10 +83,29 @@ parameters:
   new_print_job:
     in: body
     name: new_print_job
-    description: New print job
+    description: >
+      New print job
     required: true
     schema:
       $ref: "#/definitions/new_print_job"
+
+  user_credentials:
+    in: body
+    name: user_credentials
+    description: >
+      User credentials registered within Weyland
+    required: true
+    schema:
+      $ref: "#/definitions/user_credentials"
+
+  auth_credentials:
+    in: body
+    name: auth_credentials
+    description: >
+      User credentials issued by an external identity management system (IMS)
+    required: true
+    schema:
+      $ref: "#/definitions/auth_credentials"
 
 definitions:
   server_configuration:
@@ -92,7 +120,8 @@ definitions:
       - available_space
     properties:
       product:
-        description: "Product name"
+        description: >
+          Product name
         type: string
         example: "Weyland/1.0"
       platform:
@@ -100,21 +129,25 @@ definitions:
         type: string
         example: "Linux raspberrypi 4.9.24-v7+ #993 SMP Wed Apr 26 18:01:23 BST 2017 armv7l GNU/Linux"
       environment:
-        description: "Deployment environment"
+        description: >
+          Deployment environment
         type: string
         example: "development"
       time:
-        description: "Current server date/time"
+        description: >
+          Current server date/time, in UTC
         type: string
         format: dateTime
         example: "2017-05-07T21:02:55Z"
       total_space:
-        description: "Total space of server print queue"
+        description: >
+          Total space of server print queue, in bytes
         type: integer
         minimum: 1
         example: 62385172480
       available_space:
-        description: "Available space in servver print queue"
+        description: >
+          Available space in servver print queue, in bytes
         type: integer
         minimum: 1
         example: 55570456576
@@ -124,28 +157,34 @@ definitions:
     type: object
     properties:
       version:
-        description: "Printer firmware version"
+        description: >
+          Printer firmware version
         type: string
         example: "Firmware Version 2.5.1"
     required:
       - version
 
   new_print_job:
-    title: New Print Job
+    title: New print job
     type: object
     properties:
       name:
-        description: "Print job name. Default is empty string."
+        description: >
+          Print job name.
+          Default is empty string.
         type: string
         default: ""
         example: "Test Print"
       svg:
-        description: "Print job content (encoded as JSON-safe string)"
+        description: >
+          Print job content, encoded as JSON-safe string
         type: string
         format: binary
         example: "see a SVG file"
       convert:
-        description: "Convert text to paths with Inkscape. Default is false."
+        description: >
+          Convert text to paths with Inkscape.
+          Default is false.
         type: boolean
         default: false
         example: true
@@ -157,19 +196,23 @@ definitions:
     type: object
     properties:
       id:
-        description: "Print job identifier (8 hex digits)"
+        description: >
+          Print job identifier (8 hex digits)
         type: string
         example: "748e80004a66be3d"
       name:
-        description: "Print job name"
+        description: >
+          Print job name
         type: string
         example: "Test Print"
       size:
-        description: "Print job size"
+        description: >
+          Print job size
         type: integer
         example: 2904
       status:
-        description: "Print job status"
+        description: >
+          Print job status
         type: string
         enum:
           - pending
@@ -180,12 +223,14 @@ definitions:
           - failed
         example: "printed"
       created:
-        description: "Date/time when print job was first created"
+        description: >
+          Date/time when print job was first created
         type: string
         format: dateTime
         example: "2017-05-07T07:00:07Z"
       updated:
-        description: "Date/time when print job was last updated"
+        description: >
+          Date/time when print job was last updated
         type: string
         format: dateTime
         example: "2017-05-07T07:00:14Z"
@@ -205,14 +250,17 @@ definitions:
 
   font:
     title: Font
+    description: >
     type: object
     properties:
       name:
-        description: "Font name (ID)"
+        description: >
+          Font name (ID)
         type: string
         example: "Arial.ttf"
       size:
-        description: "Font size"
+        description: >
+          Font size
         type: integer
         example: 2904
     required:
@@ -224,6 +272,86 @@ definitions:
     type: array
     items:
       $ref: "#/definitions/font"
+
+  user:
+    title: User profile
+    description: >
+      User profile, excluding password
+    type: object
+    properties:
+      username:
+        description: >
+          User name (non-empty string)
+        type: string
+        example: "peter.weyland"
+      first_name:
+        description: >
+          First name
+        type: string
+        example: "Peter"
+      last_name:
+        description: >
+          Last name
+        type: string
+        example: "Weyland"
+      role:
+        description: >
+          User role
+        type: string
+        enum:
+          - operator
+          - user
+          - admin
+        example: "user"
+    required:
+      - username
+      - role
+
+  user_credentials:
+    title: User authentication credentials
+    description: >
+      Credentials registered within Weyland
+    type: object
+    properties:
+      username:
+        description: >
+          User name (non-empty string)
+        type: string
+        example: "peter.weyland"
+      password:
+        description: >
+          Password (non-empty string)
+        type: string
+        example: "3yk1/t/2SK"
+    required:
+      - username
+      - password
+
+  auth_credentials:
+    title: User authentication credentials
+    description: >
+      Credentials issued by an external identity management system (IMS), registered within Weyland
+    type: object
+    properties:
+      system:
+        description: >
+          External system name known to Weyland
+        type: string
+        example: "acme"
+      environment:
+        description: >
+          External environment name known to Weyland
+        type: string
+        example: "staging"
+      token:
+        description: >
+          Token
+        type: string
+        example: "RkZ0OUo3Y3ZJS1hqOEF0VWFKeG5WQzdERjdiZThpbHJGbmRIQmJ1eWZUdz0K"
+    required:
+      - system
+      - environment
+      - token
 
 tags:
   - name: System
@@ -289,7 +417,8 @@ paths:
     get:
       operationId: GetPrinterVersion
       summary: "Returns printer firmware version"
-      description: "This API can be used to test connectivity to the printer."
+      description: >
+        This API can be used to test connectivity to the printer.
       tags:
         - Printer
       produces:
@@ -343,7 +472,10 @@ paths:
     post:
       operationId: CreateNewPrintJob
       summary: "Create New Print Job"
-      description: "Creates a new print job. The job is placed in a background queue for conversions, if conversion was requested. Either way, it will not be sent to the printer until the Print API is called."
+      description: >
+        Creates a new print job.
+        The job is placed in a background queue for conversions, if conversion was requested.
+        Either way, it will not be sent to the printer until the Print API is called.
       tags:
         - Jobs
       parameters:
@@ -453,7 +585,9 @@ paths:
     post:
       operationId: PrintPrintJob
       summary: "Print a Job"
-      description: "Puts the print job in a background queue for printing. If conversion was requested and the job had not been converted yet, it will be converted first."
+      description: >
+        Puts the print job in a background queue for printing.
+        If conversion was requested and the job had not been converted yet, it will be converted first.
       tags:
         - Jobs
       parameters:
@@ -486,7 +620,8 @@ paths:
     post:
       operationId: MailPrintJob
       summary: "Mark a Print Job as Mailed"
-      description: "Marks the print job as having been mailed."
+      description: >
+        Marks the print job as having been mailed.
       tags:
         - Jobs
       parameters:
@@ -516,7 +651,9 @@ paths:
     get:
       operationId: ListFonts
       summary: "List Fonts"
-      description: "Lists installed fonts. This only includes custom fonts, not stock Linux fonts."
+      description: >
+        Lists installed fonts.
+        This only includes custom fonts, not stock system fonts.
       tags:
         - Fonts
       produces:
@@ -533,7 +670,9 @@ paths:
     get:
       operationId: GetFont
       summary: "Get Font"
-      description: "Retrieves the requested font. This only includes custom fonts, not stock Linux fonts."
+      description: >
+        Retrieves the requested font.
+        This only includes custom fonts, not stock system fonts.
       tags:
         - Fonts
       parameters:
@@ -557,7 +696,10 @@ paths:
     put:
       operationId: InstallFont
       summary: "Install New Font"
-      description: "Installs a new font. Replaces existing font with same name. This only includes custom fonts, not stock Linux fonts."
+      description: >
+        Installs a new font.
+        Replaces existing font with same name.
+        This only includes custom fonts, not stock system fonts.
       tags:
         - Fonts
       responses:
@@ -568,7 +710,9 @@ paths:
     delete:
       operationId: RemoveFont
       summary: "Remove Installed Font"
-      description: "Removes an previously installed font. This only includes custom fonts, not stock Linux fonts."
+      description: >
+        Removes an previously installed font.
+        This only includes custom fonts, not stock system fonts.
       tags:
         - Fonts
       responses:
@@ -578,3 +722,87 @@ paths:
           description: "bad request (malformed name)"
         404:
           description: "no such font"
+
+  /v1/auth/login:
+    post:
+      operationId: Login
+      summary: "Login"
+      description: >
+        Authenticate with username and password.
+      tags:
+        - Auth
+      parameters:
+        - $ref: "#/parameters/user_credentials"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/user"
+          headers:
+            Set-Cookie:
+              description: "Authorization token as a session cookie"
+              type: string
+              example: "WeylandToken=RkZ0OUo3Y3ZJS1hqOEF0VWFKeG5WQzdERjdiZThpbHJGbmRIQmJ1eWZUdz0K"
+        401:
+          description: "no such username or password"
+          headers:
+            Set-Cookie:
+              description: "Expired authentication token"
+              type: string
+              example: "WeylandToken=DeadMenTellNoTales; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+  /v1/auth/authorize:
+    post:
+      operationId: Authorize
+      summary: "Authorize"
+      description: >
+        Authenticate with token issued by an external identity management system (IMS).
+        The external system and environment must have been previously registered with Weyland.
+      tags:
+        - Auth
+      parameters:
+        - $ref: "#/parameters/auth_credentials"
+      produces:
+        - "application/json"
+      responses:
+        204:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/user"
+          headers:
+            Set-Cookie:
+              description: "Authorization token as a session cookie"
+              type: string
+              example: "WeylandToken=RkZ0OUo3Y3ZJS1hqOEF0VWFKeG5WQzdERjdiZThpbHJGbmRIQmJ1eWZUdz0K"
+        401:
+          description: "no such external system or environment"
+          headers:
+            Set-Cookie:
+              description: "Expired authentication token"
+              type: string
+              example: "WeylandToken=DeadMenTellNoTales; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        403:
+          description: "external IMS rejected token"
+          headers:
+            Set-Cookie:
+              description: "Expired authentication token"
+              type: string
+              example: "WeylandToken=DeadMenTellNoTales; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+  /v1/auth/logout:
+    post:
+      operationId: Logout
+      summary: "Logout"
+      description: >
+        Log out authorized user.
+        Invalidates the session cookie issued by the Login or Authorize APIs.
+      tags:
+        - Auth
+      responses:
+        204:
+          description: "OK"
+          headers:
+            Set-Cookie:
+              description: "Expired authentication token"
+              type: string
+              example: "WeylandToken=DeadMenTellNoTales; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
