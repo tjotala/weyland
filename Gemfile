@@ -5,11 +5,9 @@ gem 'sinatra'
 gem 'sinatra-base'
 gem 'sinatra-json'
 gem 'rack'
-gem 'thin'
 gem 'tilt', '~> 1.4.1'
 gem 'haml'
 gem 'promise'
-gem 'sys-filesystem'
 
 # deployment tools
 group :development, :test do
