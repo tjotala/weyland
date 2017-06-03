@@ -8,7 +8,6 @@ gem 'rack'
 gem 'tilt', '~> 1.4.1'
 gem 'haml'
 gem 'promise'
-gem 'sys-filesystem'
 
 # deployment tools
 group :development, :test do
